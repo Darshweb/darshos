@@ -10,7 +10,7 @@
       --glass: rgba(255, 255, 255, 0.06);
       --glass-high: rgba(255, 255, 255, 0.15);
       --border: rgba(255,255,255,0.1);
-      --accent: #7c3aed; /* Violet */
+      --accent: #7c3aed;
       --accent-glow: #8b5cf6;
       --text-main: #ffffff;
       --text-muted: #94a3b8;
@@ -26,37 +26,38 @@
       height: 100vh;
       width: 100vw;
       background: radial-gradient(circle at 50% 120%, #1e1b4b, #000);
-      transition: background-image 0.5s ease, transform 0.25s ease;
+      transition: background-image 0.5s ease;
       font-family: var(--font-stack);
       color: var(--text-main);
       overflow: hidden;
-      transform: translateZ(0);
+      transform: translateZ(0); /* Hardware acceleration */
     }
 
     /* Parallax wallpaper layer */
     .wallpaper-layer {
       position: fixed;
-      inset: 0;
+      inset: -5%; /* Added buffer for parallax */
       background-size: cover;
       background-position: center;
       will-change: transform;
-      transition: transform 0.12s linear;
       z-index: -2;
       filter: saturate(1.05) contrast(1.02);
+      pointer-events: none;
     }
     .wallpaper-overlay {
-      position: fixed; inset:0; background:linear-gradient(180deg, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0.45) 100%); z-index:-1;
+      position: fixed; inset:0; background:linear-gradient(180deg, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0.45) 100%); z-index:-1; pointer-events: none;
     }
 
     /* --- OS ALERTS --- */
     .os-alert {
-      position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px);
-      background: rgba(18, 18, 20, 0.95); backdrop-filter: blur(20px);
+      position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateY(-100px) translateZ(0);
+      background: rgba(18, 18, 20, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
       border: 1px solid var(--accent); border-radius: 12px; padding: 12px 24px;
       color: white; font-size: 14px; font-weight: 500; z-index: 10000;
       box-shadow: 0 10px 40px rgba(0,0,0,0.6), 0 0 20px rgba(124, 58, 237, 0.3); 
       opacity: 0; pointer-events: none; text-align: center; min-width: 250px;
       transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: transform, opacity;
     }
 
     /* --- LOCK SCREEN --- */
@@ -64,13 +65,14 @@
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(0,0,0,0.85);
-      backdrop-filter: blur(30px);
+      backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
       z-index: 9999;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       transition: opacity 0.5s ease, background-image 0.5s ease;
+      will-change: opacity;
     }
     #lockScreen.hidden { opacity: 0; pointer-events: none; }
     
@@ -87,17 +89,19 @@
       display: flex; align-items: center; justify-content: center;
       transition: background 0.2s, transform 0.08s;
       user-select: none;
+      -webkit-tap-highlight-color: transparent;
     }
     .num-btn:active { transform: scale(0.97); background: rgba(255,255,255,0.2); }
 
     /* --- SYSTEM BAR --- */
     #systemBar {
       position: fixed; top: 0; left: 0; width: 100%; height: 44px;
-      background: rgba(10, 10, 12, 0.7); backdrop-filter: blur(20px);
+      background: rgba(10, 10, 12, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--border);
       display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
       z-index: 1000; cursor: pointer; transition: 0.3s;
       user-select: none;
+      transform: translateZ(0);
     }
     #systemBar.active-media {
       background: linear-gradient(90deg, #312e81, #4c1d95, #312e81);
@@ -113,11 +117,13 @@
     .widgets-area::-webkit-scrollbar { display: none; }
     .widget {
       background: rgba(20, 20, 25, 0.4); border: 1px solid var(--border); border-radius: 18px;
-      padding: 16px; flex: 1 1 150px; scroll-snap-align: start; backdrop-filter: blur(25px);
+      padding: 16px; flex: 1 1 150px; scroll-snap-align: start; 
+      backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
       display: flex; flex-direction: column; justify-content: space-between;
       min-height: 110px; box-shadow: 0 10px 30px rgba(0,0,0,0.4); transition: transform 0.2s;
+      transform: translateZ(0); will-change: transform;
     }
-    .widget:hover { transform: translateY(-3px); }
+    .widget:hover { transform: translateY(-3px) translateZ(0); }
     .widget-title { font-size: 11px; text-transform: uppercase; color: var(--text-muted); font-weight: bold; letter-spacing: 1px; }
     .widget-value { font-size: 24px; font-weight: 300; margin-top: 5px; color: white; }
 
@@ -125,7 +131,8 @@
     .desktop { padding-top: 70px; display: flex; flex-direction: column; align-items: center; height: 100%; }
     .app-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; max-width: 500px; padding: 10px; width: 100%; }
     .app-item { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; transition: transform 0.2s, opacity 0.2s; }
-    .app-item:hover { transform: scale(1.08); }
+    .app-item:active { transform: scale(0.95); }
+    .app-item:hover { transform: scale(1.05); }
     .app-icon {
       width: 62px; height: 62px; border-radius: 16px; background: var(--glass);
       border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;
@@ -136,21 +143,23 @@
 
     /* --- WINDOWS --- */
     .window {
-      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9);
-      width: min(92%, 850px); height: min(85%, 650px);
-      background: rgba(18, 18, 20, 0.92); backdrop-filter: blur(40px);
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9) translateZ(0);
+      width: min(95%, 850px); height: min(90%, 650px);
+      background: rgba(18, 18, 20, 0.92); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px);
       border: 1px solid var(--border); border-radius: 18px;
       display: flex; flex-direction: column; opacity: 0; pointer-events: none;
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
       z-index: 100; box-shadow: 0 40px 100px rgba(0,0,0,0.6); overflow: hidden;
+      will-change: transform, opacity;
+      -webkit-backface-visibility: hidden;
     }
-    .window.open { opacity: 1; pointer-events: all; transform: translate(-50%, -50%) scale(1); }
+    .window.open { opacity: 1; pointer-events: all; transform: translate(-50%, -50%) scale(1) translateZ(0); }
     
     .win-header {
       height: 52px; padding: 0 16px; display: flex; align-items: center; justify-content: space-between;
       border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.02); flex-shrink: 0;
     }
-    .win-content { flex: 1; overflow-y: auto; padding: 20px; position: relative; }
+    .win-content { flex: 1; overflow-y: auto; padding: 20px; position: relative; -webkit-overflow-scrolling: touch; }
     .btn-close {
       width: 30px; height: 30px; border-radius: 50%; border: none; background: rgba(255,255,255,0.08);
       color: white; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s;
@@ -161,10 +170,13 @@
     .btn {
       padding: 10px 18px; border-radius: 10px; border: 1px solid var(--border); background: var(--glass);
       color: white; cursor: pointer; font-size: 13px; font-weight: 500; transition: 0.2s; display: inline-block;
+      text-align: center;
     }
+    .btn:active { transform: scale(0.95); }
     .btn:hover { background: var(--glass-high); transform: translateY(-2px); }
     .btn.primary { background: var(--accent); border-color: var(--accent); }
     .btn.primary:hover { background: var(--accent-glow); box-shadow: 0 0 20px rgba(124, 58, 237, 0.4); }
+    .btn.danger { background: rgba(239, 68, 68, 0.2); border-color: var(--danger); color: #fca5a5; }
 
     input[type="range"] { -webkit-appearance: none; width: 100%; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; }
     input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: white; cursor: pointer; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
@@ -184,7 +196,7 @@
     /* gallery full view modal */
     .viewer-modal {
       position: fixed; inset: 0; display: none; align-items:center; justify-content:center; z-index: 2000;
-      background: rgba(0,0,0,0.85); backdrop-filter: blur(6px);
+      background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
     }
     .viewer-modal.open { display:flex; }
     .viewer-content { max-width: 95vw; max-height: 92vh; background: transparent; display:flex; align-items:center; justify-content:center; position:relative; }
@@ -195,10 +207,12 @@
 
     /* --- DOCK --- */
     .dock {
-      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-      height: 76px; padding: 0 20px; background: rgba(20,20,20,0.5); backdrop-filter: blur(30px);
+      position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateZ(0);
+      height: 76px; padding: 0 20px; background: rgba(20,20,20,0.5); 
+      backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px);
       border: 1px solid rgba(255,255,255,0.05); border-radius: 24px;
       display: flex; align-items: center; gap: 18px; box-shadow: 0 20px 50px rgba(0,0,0,0.6); z-index: 900;
+      will-change: transform; -webkit-backface-visibility: hidden;
     }
     .dock .app-icon { width: 50px; height: 50px; font-size: 22px; transition: 0.2s cubic-bezier(0.2, 2, 0.4, 1); }
     .dock .app-icon:hover { transform: translateY(-10px) scale(1.16); }
@@ -207,6 +221,8 @@
     .muted { color: var(--text-muted); font-size: 13px; }
     .list { display:flex; flex-direction:column; gap:10px; }
     .list-item { padding:10px; background: rgba(255,255,255,0.02); border-radius:8px; display:flex; justify-content:space-between; align-items:center; border:1px solid var(--border); }
+    .eq-container { display: flex; gap: 10px; width: 100%; }
+    .slider-group { display: flex; flex-direction: column; align-items: center; gap: 5px; font-size: 11px; flex: 1; }
 
     /* responsive */
     @media (min-width: 1024px) {
@@ -221,15 +237,25 @@
 
     @media (max-width: 600px) {
       .app-grid { grid-template-columns: repeat(3, 1fr); gap: 15px; }
-      .numpad { gap: 15px; }
+      .numpad { gap: 12px; }
       .num-btn { width: 60px; height: 60px; font-size: 20px; }
-      .lock-clock { font-size: 50px; }
+      .lock-clock { font-size: 45px; margin-bottom: 10px; }
       .eq-container { flex-wrap: wrap; justify-content: center; }
       .slider-group { flex: 1 1 30%; }
-      .dock { width: 90%; padding: 0 10px; justify-content: space-around; }
+      .dock { width: 90%; padding: 0 10px; justify-content: space-around; gap: 5px; }
       .dock .app-icon { width: 45px; height: 45px; font-size: 20px; }
       #systemBar { font-size: 11px; padding: 0 10px; }
       .win-title { font-size: 14px; }
+      .window { width: 95%; height: 90%; }
+    }
+    
+    @media (max-height: 700px) {
+      .lock-clock { font-size: 40px; margin-bottom: 5px; }
+      .numpad { gap: 10px; }
+      .num-btn { width: 55px; height: 55px; font-size: 18px; }
+      .pin-display { margin-bottom: 15px; }
+      .desktop { padding-top: 55px; }
+      .dock { bottom: 10px; height: 65px; }
     }
   </style>
 </head>
@@ -276,7 +302,6 @@
 
   <main class="desktop">
     <div id="widgetsArea" class="widgets-area"></div>
-
     <div class="app-grid" id="desktopGrid"></div>
   </main>
 
@@ -288,12 +313,12 @@
       <button class="btn-close" onclick="OS.close('win_phone')">×</button>
     </div>
     <div class="win-content" style="display:flex; flex-direction:column;">
-      <div style="text-align:center; padding:20px;">
-        <div style="width:80px; height:80px; margin:0 auto; border-radius:50%; background:radial-gradient(circle, #8b5cf6, #4c1d95); box-shadow:0 0 40px rgba(139,92,246,0.3); display:flex; align-items:center; justify-content:center; font-size:32px;">⚡</div>
-        <div id="aiState" style="margin-top:10px; color:var(--text-muted);">Darsh AI Standby</div>
+      <div style="text-align:center; padding:10px;">
+        <div style="width:60px; height:60px; margin:0 auto; border-radius:50%; background:radial-gradient(circle, #8b5cf6, #4c1d95); box-shadow:0 0 30px rgba(139,92,246,0.3); display:flex; align-items:center; justify-content:center; font-size:24px;">⚡</div>
+        <div id="aiState" style="margin-top:10px; color:var(--text-muted); font-size: 12px;">Darsh AI Standby</div>
       </div>
       <div id="chatBox" style="flex:1; background:rgba(0,0,0,0.3); border-radius:12px; padding:15px; overflow-y:auto; margin-bottom:15px; border:1px solid var(--border);">
-        <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:8px; margin-bottom:5px;">Hello. I am Darsh AI.</div>
+        <div style="background:rgba(255,255,255,0.05); padding:10px; border-radius:8px; margin-bottom:5px; font-size: 14px;">Hello. I am Darsh AI.</div>
       </div>
       <div style="display:flex; gap:10px;">
         <input id="aiInput" type="text" placeholder="Message Darsh AI..." style="flex:1; background:rgba(255,255,255,0.05); border:none; padding:12px; border-radius:8px; color:white;">
@@ -309,23 +334,20 @@
       <button class="btn-close" onclick="OS.close('win_music')">×</button>
     </div>
     <div class="win-content">
-      <canvas id="vizCanvas" class="viz-canvas" height="60"></canvas>
+      <canvas id="vizCanvas" class="viz-canvas" height="60" style="width: 100%; border-radius: 8px; margin-bottom: 10px;"></canvas>
       <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:15px;">
         <div>
-          <h3 id="songTitle" style="margin:0;">No Track Loaded</h3>
+          <h3 id="songTitle" style="margin:0; font-size: 16px;">No Track Loaded</h3>
           <small style="color:var(--text-muted)">Darsh Audio Engine</small>
         </div>
-        <div class="atmos-toggle" id="atmosBtn" onclick="AudioEngine.toggleAtmos()">
-          <span class="badge">Dolby Atmos</span>
-          <span>Spatial Audio</span>
-        </div>
+        <button class="btn" id="atmosBtn" onclick="AudioEngine.toggleAtmos()" style="font-size: 11px;">Spatial Audio</button>
       </div>
 
-      <div style="display:flex; gap:10px; margin-bottom:20px;">
-        <button class="btn primary" onclick="AudioEngine.playDemo()">Play Demo</button>
-        <button class="btn danger" onclick="AudioEngine.stop()">Stop</button>
-        <label class="btn" style="cursor:pointer;">
-          Load MP3 <input type="file" style="display:none" onchange="AudioEngine.loadLocal(this)">
+      <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap: wrap;">
+        <button class="btn primary" onclick="AudioEngine.playDemo()" style="flex: 1;">Demo</button>
+        <button class="btn danger" onclick="AudioEngine.stop()" style="flex: 1;">Stop</button>
+        <label class="btn" style="flex: 1; cursor:pointer;">
+          Load <input type="file" style="display:none" onchange="AudioEngine.loadLocal(this)">
         </label>
       </div>
 
@@ -349,20 +371,19 @@
       <button class="btn-close" onclick="OS.close('win_movies')">×</button>
     </div>
     <div class="win-content" style="padding: 0; display: flex; flex-direction: column; background: #000; overflow: hidden;">
-      
       <video id="darshVideoPlayer" style="width: 100%; height: 35vh; min-height: 200px; background: #0a0a0c; object-fit: contain; cursor: pointer;" onclick="MoviesApp.togglePlay()"></video>
 
       <div style="padding: 15px; background: rgba(18,18,20,0.9); border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 15px; flex: 1; overflow-y: auto;">
           <div style="display: flex; gap: 10px; justify-content: space-between; align-items: center;">
-              <label class="btn primary" style="flex: 1; text-align: center;">
-                  Upload Video <input type="file" style="display:none" accept="video/*" onchange="MoviesApp.loadVideo(this)">
+              <label class="btn primary" style="flex: 1;">
+                  Upload <input type="file" style="display:none" accept="video/*" onchange="MoviesApp.loadVideo(this)">
               </label>
-              <button class="btn" onclick="MoviesApp.toggleFullscreen()">⛶ Full Screen</button>
+              <button class="btn" style="flex: 1;" onclick="MoviesApp.toggleFullscreen()">⛶ Full Screen</button>
           </div>
 
           <div style="display: flex; gap: 10px;">
-              <button class="btn" style="flex:1" onclick="MoviesApp.togglePanel('quality')">🎬 Video Quality</button>
-              <button class="btn" style="flex:1" onclick="MoviesApp.togglePanel('audio')">🔊 Audio / Theatre</button>
+              <button class="btn" style="flex:1" onclick="MoviesApp.togglePanel('quality')">🎬 Quality</button>
+              <button class="btn" style="flex:1" onclick="MoviesApp.togglePanel('audio')">🔊 Audio</button>
           </div>
 
           <div id="moviesQualityPanel" style="display: none; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; border: 1px solid var(--border);">
@@ -377,11 +398,8 @@
 
           <div id="moviesAudioPanel" style="display: none; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; border: 1px solid var(--border);">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                  <span style="font-size: 11px; text-transform: uppercase; color:var(--text-muted); letter-spacing: 1px;">Cinema Equalizer</span>
-                  <div class="atmos-toggle" id="theatreToggle" onclick="MoviesApp.toggleTheatre()" style="margin: 0;">
-                      <span class="badge" style="background: #ef4444; color: white;">TH</span>
-                      <span>Theatre Sound</span>
-                  </div>
+                  <span style="font-size: 11px; text-transform: uppercase; color:var(--text-muted); letter-spacing: 1px;">Cinema EQ</span>
+                  <button class="btn" id="theatreToggle" onclick="MoviesApp.toggleTheatre()">Theatre Sound</button>
               </div>
               <div class="eq-container">
                   <div class="slider-group"><input type="range" min="-12" max="12" value="0" class="slider-v" oninput="MoviesApp.setGain('low', this.value)"><span>Bass</span></div>
@@ -417,12 +435,11 @@
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
         <div class="muted">Gallery</div>
         <div style="display:flex; gap:8px;">
-          <button class="btn" onclick="Gallery.clearAll()">Clear All</button>
-          <button class="btn" onclick="OS.openApp('recycle')">Open Recycle Bin</button>
+          <button class="btn danger" onclick="Gallery.clearAll()">Clear</button>
         </div>
       </div>
       <div id="galleryGrid" class="gallery-grid"></div>
-      <div id="emptyGallery" style="text-align:center; color:var(--text-muted); margin-top:50px; display:none;">No photos yet.<br>Use Camera to take some.</div>
+      <div id="emptyGallery" style="text-align:center; color:var(--text-muted); margin-top:50px; display:none;">No photos yet.</div>
     </div>
   </div>
 
@@ -436,25 +453,22 @@
         <div class="list-item">
           <div>
             <div style="font-weight:600">Home Wallpaper</div>
-            <div class="muted" style="font-size:12px">Set desktop background</div>
           </div>
           <label class="btn primary">Upload <input type="file" style="display:none" accept="image/*" onchange="SettingsModule.setWallpaper(this, 'home')"></label>
         </div>
         <div class="list-item">
           <div>
-            <div style="font-weight:600">Lock Screen Wallpaper</div>
-            <div class="muted" style="font-size:12px">Set lock screen background</div>
+            <div style="font-weight:600">Lock Wallpaper</div>
           </div>
           <label class="btn primary">Upload <input type="file" style="display:none" accept="image/*" onchange="SettingsModule.setWallpaper(this, 'lock')"></label>
         </div>
         <div class="list-item">
           <div>
-            <div style="font-weight:600">Reset Wallpapers</div>
-            <div class="muted" style="font-size:12px">Restore default look</div>
+            <div style="font-weight:600">Reset System Wallpapers</div>
           </div>
           <button class="btn danger" onclick="SettingsModule.resetWallpapers()">Reset</button>
         </div>
-        <div class="list-item">
+        <div class="list-item" style="flex-wrap: wrap; gap: 10px;">
           <div>
             <div style="font-weight:600">Lock Screen PIN</div>
             <div class="muted" style="font-size:12px">Set a 4-digit PIN</div>
@@ -474,9 +488,8 @@
       <button class="btn-close" onclick="OS.close('win_files')">×</button>
     </div>
     <div class="win-content">
-      <div style="display:flex; gap:10px; align-items:center; margin-bottom:12px;">
+      <div style="display:flex; gap:10px; align-items:center; margin-bottom:12px; flex-wrap: wrap;">
         <label class="btn primary">Upload File <input type="file" style="display:none" id="fileUploadInput" multiple onchange="FilesApp.upload(this)"></label>
-        <button class="btn" onclick="FilesApp.exportAll()">Export All (ZIP)</button>
         <div class="muted" id="filesCount">0 files</div>
       </div>
       <div id="filesList" class="list"></div>
@@ -491,9 +504,7 @@
     <div class="win-content">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
         <div class="muted">Deleted Items</div>
-        <div style="display:flex; gap:8px;">
-          <button class="btn" onclick="Recycle.empty()">Empty Bin</button>
-        </div>
+        <button class="btn danger" onclick="Recycle.empty()">Empty Bin</button>
       </div>
       <div id="recycleList" class="list"></div>
     </div>
@@ -505,7 +516,7 @@
       <button class="btn-close" onclick="OS.close('win_store')">×</button>
     </div>
     <div class="win-content">
-      <p class="muted">Browse and install apps. Installed apps appear on the desktop and dock.</p>
+      <p class="muted">Browse and install apps.</p>
       <div id="storeList" class="list" style="margin-top:10px;"></div>
     </div>
   </div>
@@ -517,12 +528,11 @@
     </div>
     <div class="win-content">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-        <div class="muted">Running Windows</div>
         <div class="muted" id="taskUptime">Uptime: 0s</div>
       </div>
       <div id="taskList" class="list"></div>
       <div style="margin-top:12px;">
-        <button class="btn danger" onclick="TaskManager.killAll()">Kill All (close windows)</button>
+        <button class="btn danger" onclick="TaskManager.killAll()">Kill All Apps</button>
       </div>
     </div>
   </div>
@@ -533,7 +543,6 @@
       <button class="btn-close" onclick="OS.close('win_antivirus')">×</button>
     </div>
     <div class="win-content">
-      <p class="muted">Fake scanner for demo: scans Files & Photos for threats (simulation).</p>
       <div style="display:flex; gap:8px; margin-bottom:12px;">
         <button class="btn primary" onclick="Antivirus.scan()">Quick Scan</button>
         <button class="btn" onclick="Antivirus.fullScan()">Full Scan</button>
@@ -552,7 +561,7 @@
         <input id="noteTitle" placeholder="Title" style="flex:1; padding:10px; border-radius:8px; border:1px solid var(--border); background:rgba(0,0,0,0.3); color:white;">
         <button class="btn primary" onclick="Notes.save()">Save</button>
       </div>
-      <textarea id="noteBody" placeholder="Write your note..." style="width:100%; height:200px; padding:12px; border-radius:8px; border:1px solid var(--border); background:rgba(0,0,0,0.3); color:white;"></textarea>
+      <textarea id="noteBody" placeholder="Write your note..." style="width:100%; height:150px; padding:12px; border-radius:8px; border:1px solid var(--border); background:rgba(0,0,0,0.3); color:white; resize: none;"></textarea>
       <div id="notesList" class="list" style="margin-top:12px;"></div>
     </div>
   </div>
@@ -563,27 +572,27 @@
       <button class="btn-close" onclick="OS.close('win_calc')">×</button>
     </div>
     <div class="win-content">
-      <input id="calcDisplay" readonly style="width:100%; padding:12px; font-size:20px; border-radius:8px; border:1px solid var(--border); background:rgba(0,0,0,0.2); color:white; margin-bottom:10px;">
-      <div style="display:grid; grid-template-columns: repeat(4,1fr); gap:8px;">
+      <input id="calcDisplay" readonly style="width:100%; padding:15px; font-size:24px; border-radius:8px; border:1px solid var(--border); background:rgba(0,0,0,0.2); color:white; margin-bottom:15px; text-align: right;">
+      <div style="display:grid; grid-template-columns: repeat(4,1fr); gap:10px;">
         <button class="btn" onclick="Calc.press('7')">7</button>
         <button class="btn" onclick="Calc.press('8')">8</button>
         <button class="btn" onclick="Calc.press('9')">9</button>
-        <button class="btn" onclick="Calc.press('/')">/</button>
+        <button class="btn primary" onclick="Calc.press('/')">÷</button>
 
         <button class="btn" onclick="Calc.press('4')">4</button>
         <button class="btn" onclick="Calc.press('5')">5</button>
         <button class="btn" onclick="Calc.press('6')">6</button>
-        <button class="btn" onclick="Calc.press('*')">*</button>
+        <button class="btn primary" onclick="Calc.press('*')">×</button>
 
         <button class="btn" onclick="Calc.press('1')">1</button>
         <button class="btn" onclick="Calc.press('2')">2</button>
         <button class="btn" onclick="Calc.press('3')">3</button>
-        <button class="btn" onclick="Calc.press('-')">-</button>
+        <button class="btn primary" onclick="Calc.press('-')">−</button>
 
+        <button class="btn danger" onclick="Calc.clear()">C</button>
         <button class="btn" onclick="Calc.press('0')">0</button>
         <button class="btn" onclick="Calc.press('.')">.</button>
-        <button class="btn" onclick="Calc.equals()">=</button>
-        <button class="btn" onclick="Calc.press('+')">+</button>
+        <button class="btn primary" onclick="Calc.equals()">=</button>
       </div>
     </div>
   </div>
@@ -594,24 +603,16 @@
       <img id="viewerImg" class="viewer-img" src="" alt="preview">
       <div class="viewer-nav right" onclick="Gallery.next()">›</div>
       <div class="viewer-controls">
-        <button class="btn" onclick="Gallery.downloadCurrent()">Download</button>
         <button class="btn danger" onclick="Gallery.deleteCurrent()">Delete</button>
-        <button class="btn" onclick="Gallery.toggleFit()">Fit/Contain</button>
       </div>
     </div>
   </div>
 
   <script>
-    /* =========================================
-       Utilities & small helpers
-       ========================================= */
     const $ = (id) => document.getElementById(id);
     function safeParse(key, fallback){ try { return JSON.parse(localStorage.getItem(key)||'null') || fallback; } catch(e){ return fallback; } }
     function safeSet(key, val){ try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) { console.warn('storage full?'); } }
 
-    /* =========================================
-       APPS REGISTER (original apps preserved)
-       ========================================= */
     const AVAILABLE_APPS = [
       { id: 'phone', name: 'Phone / AI', icon: '📞' },
       { id: 'music', name: 'Music', icon: '🎵' },
@@ -619,22 +620,15 @@
       { id: 'camera', name: 'Camera', icon: '📸' },
       { id: 'gallery', name: 'Gallery', icon: '🖼️' },
       { id: 'settings', name: 'Settings', icon: '⚙️' },
-
-      // apps available in App Store (installable)
       { id: 'task', name: 'Task Manager', icon: '🧠', store: true },
       { id: 'antivirus', name: 'Darsh Anti', icon: '🛡️', store: true },
       { id: 'notes', name: 'Notes', icon: '🗒️', store: true },
       { id: 'calc', name: 'Calculator', icon: '🧮', store: true },
-
-      // always-available system apps (Files & Recycle & Store)
       { id: 'files', name: 'Files', icon: '📁', system: true },
       { id: 'recycle', name: 'Recycle Bin', icon: '🗑️', system: true },
       { id: 'store', name: 'App Store', icon: '🏬', system: true },
     ];
 
-    /* =========================================
-       OS CORE
-       ========================================= */
     const OS = {
       alertTimer: null,
       init: () => {
@@ -695,34 +689,16 @@
             }
           }
         });
-
-        for(const id of installed) {
-          if(added >= 6) break;
-          if(dock.querySelector(`[data-id="${id}"]`)) continue;
-          const app = AVAILABLE_APPS.find(a=>a.id===id);
-          if(app) {
-            const d = document.createElement('div');
-            d.className = 'app-icon';
-            d.title = app.name;
-            d.innerHTML = app.icon;
-            d.onclick = () => OS.openApp(app.id);
-            dock.appendChild(d);
-            added++;
-          }
-        }
       },
 
       openApp: (id) => {
         const win = document.getElementById('win_' + id);
-        if(!win) {
-          OS.alert('App not available on this OS. Open App Store to install.');
-          return;
-        }
+        if(!win) { OS.alert('App not installed. Check App Store.'); return; }
         win.classList.add('open');
 
         if(id === 'camera') Camera.start();
         if(id === 'gallery') Gallery.render();
-        if(id === 'music') AudioEngine.initContext();
+        if(id === 'music') { AudioEngine.vizActive = true; AudioEngine.initContext(); }
         if(id === 'files') FilesApp.render();
         if(id === 'recycle') Recycle.render();
         if(id === 'store') Store.render();
@@ -745,6 +721,7 @@
             const vid = $('darshVideoPlayer');
             if(vid) vid.pause();
         }
+        if(winId === 'win_music') { AudioEngine.vizActive = false; }
       },
 
       setBar: (text, animClass = false) => {
@@ -753,11 +730,8 @@
         $('barStatus').innerText = text;
         const animClasses = ['active-media','anim-shimmer','anim-pulse','anim-rgb','anim-warning','anim-success','anim-ai','anim-scanline','anim-neon','anim-matrix','anim-dataflow'];
         animClasses.forEach(c => b.classList.remove(c));
-        if(animClass === true) {
-            b.classList.add('active-media');
-        } else if (typeof animClass === 'string' && animClass) {
-            b.classList.add(animClass);
-        }
+        if(animClass === true) b.classList.add('active-media');
+        else if (typeof animClass === 'string' && animClass) b.classList.add(animClass);
       },
 
       alert: (msg) => {
@@ -765,12 +739,12 @@
         if(!el) return;
         el.innerText = msg;
         el.style.opacity = '1';
-        el.style.transform = 'translateX(-50%) translateY(0)';
+        el.style.transform = 'translateX(-50%) translateY(0) translateZ(0)';
         
         if(OS.alertTimer) clearTimeout(OS.alertTimer);
         OS.alertTimer = setTimeout(() => {
             el.style.opacity = '0';
-            el.style.transform = 'translateX(-50%) translateY(-100px)';
+            el.style.transform = 'translateX(-50%) translateY(-100px) translateZ(0)';
         }, 3000);
       },
 
@@ -779,44 +753,39 @@
         const saved = localStorage.getItem('darsh_wp_home');
         if(saved) {
           layer.style.backgroundImage = `url(${saved})`;
-        } else {
-          layer.style.backgroundImage = 'radial-gradient(circle at 50% 120%, #1e1b4b, #000)';
         }
 
-        let lastX = 0, lastY = 0;
+        let targetX = 0, targetY = 0;
+        let currentX = 0, currentY = 0;
+        let idleT = 0;
+
         window.addEventListener('pointermove', (e) => {
-          const px = (e.clientX / window.innerWidth) - 0.5;
-          const py = (e.clientY / window.innerHeight) - 0.5;
-          lastX = px; lastY = py;
-          const tx = px * 12; 
-          const ty = py * 12; 
-          const scale = 1.02;
-          layer.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(${scale})`;
+          targetX = (e.clientX / window.innerWidth) - 0.5;
+          targetY = (e.clientY / window.innerHeight) - 0.5;
         }, { passive: true });
 
         if(window.DeviceOrientationEvent) {
           window.addEventListener('deviceorientation', (ev) => {
-            const gx = ev.gamma || 0;
-            const gy = ev.beta || 0;
-            const tx = (gx / 90) * 12;
-            const ty = (gy / 90) * 12;
-            layer.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(1.02)`;
+            targetX = (ev.gamma || 0) / 90;
+            targetY = (ev.beta || 0) / 90;
           }, { passive: true });
         }
 
-        let idleT = 0;
-        setInterval(()=> {
+        const renderParallax = () => {
           idleT += 0.02;
-          const tx = Math.sin(idleT) * 2;
-          const ty = Math.cos(idleT*0.7) * 2;
-          layer.style.transform = `translate3d(${tx + (lastX*6)}px, ${ty + (lastY*6)}px, 0) scale(1.02)`;
-        }, 40);
+          currentX += (targetX - currentX) * 0.1;
+          currentY += (targetY - currentY) * 0.1;
+
+          const tx = Math.sin(idleT) * 2 + (currentX * 15);
+          const ty = Math.cos(idleT*0.7) * 2 + (currentY * 15);
+          
+          if(layer) layer.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(1.05)`;
+          requestAnimationFrame(renderParallax);
+        };
+        requestAnimationFrame(renderParallax);
       }
     };
 
-    /* =========================================
-       SettingsModule
-       ========================================= */
     const SettingsModule = {
       setWallpaper: (input, type) => {
         const file = input.files && input.files[0];
@@ -835,9 +804,7 @@
                 if(ls) ls.style.backgroundImage = `url(${data})`;
                 OS.setBar("Lock Wallpaper Updated", "anim-success");
               }
-            } catch (err) {
-              OS.alert('Failed to save wallpaper (storage limit).');
-            }
+            } catch (err) { OS.alert('Failed to save wallpaper (storage limit).'); }
           };
           reader.readAsDataURL(file);
         }
@@ -852,9 +819,7 @@
       },
       initWallpapers: () => {
          const homeWp = localStorage.getItem('darsh_wp_home');
-         if(homeWp) {
-            $('wallpaperLayer').style.backgroundImage = `url(${homeWp})`;
-         }
+         if(homeWp) $('wallpaperLayer').style.backgroundImage = `url(${homeWp})`;
          const lockWp = localStorage.getItem('darsh_wp_lock');
          if(lockWp) {
             const ls = $('lockScreen');
@@ -863,61 +828,43 @@
       }
     };
 
-    /* =========================================
-       Widgets
-       ========================================= */
     const Widgets = {
       init: () => {
         const wa = $('widgetsArea');
         if(!wa) return;
-        
         wa.innerHTML = '';
         const w1 = document.createElement('div');
         w1.className = 'widget';
-        w1.innerHTML = `<div class="widget-title" id="widgetDate">Date</div>
-                        <div class="widget-value" id="widgetClock">--:--</div>`;
-                        
+        w1.innerHTML = `<div class="widget-title" id="widgetDate">Date</div><div class="widget-value" id="widgetClock">--:--</div>`;
         const w2 = document.createElement('div');
         w2.className = 'widget';
         w2.style.background = 'linear-gradient(135deg, rgba(124, 58, 237, 0.2), rgba(0,0,0,0.4))';
         w2.style.borderColor = 'rgba(124, 58, 237, 0.4)';
-        w2.innerHTML = `<div class="widget-title">Darsh AI Core</div>
-                        <div class="widget-value" style="color:var(--accent-glow)">Online</div>
-                        <div style="font-size:11px; color:var(--text-muted); margin-top:8px;">Ready for uplink sequence</div>`;
-                        
-        wa.appendChild(w1);
-        wa.appendChild(w2);
+        w2.innerHTML = `<div class="widget-title">Darsh AI Core</div><div class="widget-value" style="color:var(--accent-glow)">Online</div>`;
+        wa.appendChild(w1); wa.appendChild(w2);
 
         setInterval(() => {
           const now = new Date();
-          const t = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+          const t = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
           const d = now.toLocaleDateString([], {weekday:'short', month:'short', day:'numeric'});
-          const wc = $('widgetClock');
-          const wd = $('widgetDate');
-          if(wc) wc.innerText = t;
-          if(wd) wd.innerText = d;
+          if($('widgetClock')) $('widgetClock').innerText = t;
+          if($('widgetDate')) $('widgetDate').innerText = d;
         }, 1000);
       }
     };
 
-    /* =========================================
-       LOCK logic
-       ========================================= */
     const Lock = {
       buffer: '',
-      
       init: () => {
         const pin = localStorage.getItem('darsh_pin');
         const lockScreenEl = $('lockScreen');
         if(pin) {
           if(lockScreenEl) lockScreenEl.classList.remove('hidden');
-          const pinStateTextEl = $('pinStateText');
-          if(pinStateTextEl) pinStateTextEl.innerText = "System Protected";
+          if($('pinStateText')) $('pinStateText').innerText = "System Protected";
         } else {
           if(lockScreenEl) lockScreenEl.classList.add('hidden');
         }
       },
-
       press: (num) => {
         if(Lock.buffer.length < 4) {
           Lock.buffer += String(num);
@@ -925,7 +872,6 @@
           if(Lock.buffer.length === 4) Lock.check();
         }
       },
-
       check: () => {
         const stored = localStorage.getItem('darsh_pin') || '';
         const pad = document.querySelector('.numpad');
@@ -933,36 +879,18 @@
           const lockScreenEl = $('lockScreen');
           if(lockScreenEl) lockScreenEl.style.opacity = '0';
           OS.setBar("System Unlocked", "anim-success");
-          setTimeout(() => {
-              if(lockScreenEl) lockScreenEl.classList.add('hidden');
-              OS.setBar("System Secure");
-          }, 500);
-          Lock.buffer = '';
-          Lock.updateDots();
+          setTimeout(() => { if(lockScreenEl) lockScreenEl.classList.add('hidden'); OS.setBar("System Secure"); }, 500);
         } else {
-          if(pad) {
-            pad.style.transform = 'translateX(10px)';
-            setTimeout(()=>pad.style.transform = 'translateX(-10px)', 50);
-            setTimeout(()=>pad.style.transform = 'translateX(0)', 100);
-          }
-          Lock.buffer = '';
-          Lock.updateDots();
+          if(pad) { pad.style.transform = 'translateX(10px)'; setTimeout(()=>pad.style.transform = 'translateX(-10px)', 50); setTimeout(()=>pad.style.transform = 'translateX(0)', 100); }
         }
+        Lock.buffer = ''; Lock.updateDots();
       },
-
-      clear: () => {
-        Lock.buffer = '';
-        Lock.updateDots();
-      },
-
+      clear: () => { Lock.buffer = ''; Lock.updateDots(); },
       updateDots: () => {
-        const dots = document.querySelectorAll('.pin-dot');
-        dots.forEach((d, i) => {
-          if(i < Lock.buffer.length) d.classList.add('filled');
-          else d.classList.remove('filled');
+        document.querySelectorAll('.pin-dot').forEach((d, i) => {
+          if(i < Lock.buffer.length) d.classList.add('filled'); else d.classList.remove('filled');
         });
       },
-
       setPin: () => {
         const el = document.getElementById('settingNewPin');
         if(!el) return;
@@ -970,927 +898,378 @@
         if(/^\d{4}$/.test(val)) {
           try {
             localStorage.setItem('darsh_pin', val);
-            OS.alert('System Secured. Next boot requires PIN.');
-            const pinStateTextEl = document.getElementById('pinStateText');
-            if(pinStateTextEl) pinStateTextEl.innerText = "System Protected";
+            OS.alert('System Secured.');
+            if($('pinStateText')) $('pinStateText').innerText = "System Protected";
             el.value = '';
-            const lockScreenEl = $('lockScreen');
-            if(lockScreenEl) lockScreenEl.classList.remove('hidden');
-          } catch (err) {
-            OS.alert('Unable to save PIN (storage issue).');
-          }
-        } else {
-          OS.alert('Error: PIN must be 4 digits.');
-        }
+            if($('lockScreen')) $('lockScreen').classList.remove('hidden');
+          } catch (err) { OS.alert('Unable to save PIN.'); }
+        } else { OS.alert('Error: PIN must be 4 digits.'); }
       }
     };
-  </script>
 
-  <script>
-    /* ---------- MOVIES APP ---------- */
     const MoviesApp = {
-      ctx: null, source: null, eq: {}, theatreActive: false,
-      theatreDelay: null, theatreFeedback: null, theatreBass: null,
-      theatreWet: null, theatreDry: null,
-
+      ctx: null, source: null, eq: {}, theatreActive: false, theatreBass: null, theatreWet: null, theatreDry: null,
       initContext: () => {
         if(MoviesApp.ctx) return;
         const AC = window.AudioContext || window.webkitAudioContext;
-        if(!AC) return OS.alert('AudioContext not supported.');
+        if(!AC) return;
         MoviesApp.ctx = new AC();
         const video = document.getElementById('darshVideoPlayer');
         if(!video) return;
         MoviesApp.source = MoviesApp.ctx.createMediaElementSource(video);
 
-        const freqs = [100, 1000, 5000];
-        const types = ['lowshelf', 'peaking', 'highshelf'];
-        const keys = ['low', 'mid', 'high'];
+        const freqs = [100, 1000, 5000]; const types = ['lowshelf', 'peaking', 'highshelf']; const keys = ['low', 'mid', 'high'];
         let prev = MoviesApp.source;
 
         keys.forEach((k, i) => {
           const f = MoviesApp.ctx.createBiquadFilter();
           f.frequency.value = freqs[i]; f.type = types[i]; f.gain.value = 0;
-          prev.connect(f);
-          prev = f;
-          MoviesApp.eq[k] = f;
+          prev.connect(f); prev = f; MoviesApp.eq[k] = f;
         });
 
-        MoviesApp.theatreBass = MoviesApp.ctx.createBiquadFilter();
-        MoviesApp.theatreBass.type = 'lowshelf';
-        MoviesApp.theatreBass.frequency.value = 60;
-        MoviesApp.theatreBass.gain.value = 0;
+        MoviesApp.theatreBass = MoviesApp.ctx.createBiquadFilter(); MoviesApp.theatreBass.type = 'lowshelf'; MoviesApp.theatreBass.frequency.value = 60; MoviesApp.theatreBass.gain.value = 0;
+        const delay = MoviesApp.ctx.createDelay(); delay.delayTime.value = 0.05;
+        const feedback = MoviesApp.ctx.createGain(); feedback.gain.value = 0.25;
+        MoviesApp.theatreWet = MoviesApp.ctx.createGain(); MoviesApp.theatreWet.gain.value = 0;
+        MoviesApp.theatreDry = MoviesApp.ctx.createGain(); MoviesApp.theatreDry.gain.value = 1;
 
-        MoviesApp.theatreDelay = MoviesApp.ctx.createDelay();
-        MoviesApp.theatreDelay.delayTime.value = 0.05;
-        
-        MoviesApp.theatreFeedback = MoviesApp.ctx.createGain();
-        MoviesApp.theatreFeedback.gain.value = 0.25;
-
-        const wetGain = MoviesApp.ctx.createGain();
-        wetGain.gain.value = 0;
-        MoviesApp.theatreWet = wetGain;
-
-        const dryGain = MoviesApp.ctx.createGain();
-        dryGain.gain.value = 1;
-        MoviesApp.theatreDry = dryGain;
-
-        prev.connect(MoviesApp.theatreBass);
-        MoviesApp.theatreBass.connect(dryGain);
-        MoviesApp.theatreBass.connect(MoviesApp.theatreDelay);
-        MoviesApp.theatreDelay.connect(MoviesApp.theatreFeedback);
-        MoviesApp.theatreFeedback.connect(MoviesApp.theatreDelay); 
-        MoviesApp.theatreDelay.connect(wetGain);
-        dryGain.connect(MoviesApp.ctx.destination);
-        wetGain.connect(MoviesApp.ctx.destination);
+        prev.connect(MoviesApp.theatreBass); MoviesApp.theatreBass.connect(MoviesApp.theatreDry); MoviesApp.theatreBass.connect(delay); delay.connect(feedback); feedback.connect(delay); delay.connect(MoviesApp.theatreWet);
+        MoviesApp.theatreDry.connect(MoviesApp.ctx.destination); MoviesApp.theatreWet.connect(MoviesApp.ctx.destination);
       },
-
       loadVideo: (input) => {
-        const file = input.files && input.files[0];
-        if(!file) return;
+        const file = input.files && input.files[0]; if(!file) return;
         MoviesApp.initContext();
         if(MoviesApp.ctx && MoviesApp.ctx.state === 'suspended') MoviesApp.ctx.resume();
         const video = document.getElementById('darshVideoPlayer');
-        if(!video) return;
         if(video._currentObjectURL) URL.revokeObjectURL(video._currentObjectURL);
-        const obj = URL.createObjectURL(file);
-        video._currentObjectURL = obj;
-        video.src = obj;
-        const playPromise = video.play();
-        if(playPromise && typeof playPromise.then === 'function') {
-          playPromise.catch(()=>{}); 
-        }
-        OS.setBar("Darsh Movies Running", "anim-rgb");
-        OS.alert("Video Loaded Successfully.");
+        const obj = URL.createObjectURL(file); video._currentObjectURL = obj; video.src = obj;
+        video.play().catch(()=>{}); OS.setBar("Darsh Movies Running", "anim-rgb"); OS.alert("Video Loaded.");
       },
-
-      togglePlay: () => {
-        const video = document.getElementById('darshVideoPlayer');
-        if(!video) return;
-        if(video.paused) video.play().catch(()=>{}); else video.pause();
-      },
-
-      toggleFullscreen: () => {
-        const video = document.getElementById('darshVideoPlayer');
-        if(!video) return;
-        if (video.requestFullscreen) {
-            video.requestFullscreen();
-        } else if (video.webkitRequestFullscreen) {
-            video.webkitRequestFullscreen();
-        } else if (video.msRequestFullscreen) {
-            video.msRequestFullscreen();
-        }
-      },
-
+      togglePlay: () => { const video = document.getElementById('darshVideoPlayer'); if(video.paused) video.play().catch(()=>{}); else video.pause(); },
+      toggleFullscreen: () => { const video = document.getElementById('darshVideoPlayer'); if (video.requestFullscreen) video.requestFullscreen(); else if (video.webkitRequestFullscreen) video.webkitRequestFullscreen(); },
       togglePanel: (panel) => {
-        const q = document.getElementById('moviesQualityPanel');
-        const a = document.getElementById('moviesAudioPanel');
-        if(!q || !a) return;
-        if(panel === 'quality') {
-            q.style.display = q.style.display === 'none' ? 'block' : 'none';
-            a.style.display = 'none';
-        } else {
-            a.style.display = a.style.display === 'none' ? 'block' : 'none';
-            q.style.display = 'none';
-        }
+        const q = document.getElementById('moviesQualityPanel'), a = document.getElementById('moviesAudioPanel');
+        if(panel === 'quality') { q.style.display = q.style.display === 'none' ? 'block' : 'none'; a.style.display = 'none'; } 
+        else { a.style.display = a.style.display === 'none' ? 'block' : 'none'; q.style.display = 'none'; }
       },
-
       setQuality: (qual, btn) => {
-        const borderColor = getComputedStyle(document.documentElement).getPropertyValue('--border') || 'rgba(255,255,255,0.1)';
-        document.querySelectorAll('.quality-btn').forEach(b => {
-            b.classList.remove('primary');
-            b.style.borderColor = borderColor;
-        });
+        document.querySelectorAll('.quality-btn').forEach(b => { b.classList.remove('primary'); });
         if(btn) btn.classList.add('primary');
-
-        const video = document.getElementById('darshVideoPlayer');
-        if(!video) return;
+        const video = document.getElementById('darshVideoPlayer'); if(!video) return;
         if(qual === '720p') video.style.filter = 'contrast(1)';
         if(qual === '4k30') video.style.filter = 'contrast(1.05) saturate(1.1) brightness(1.05)';
         if(qual === '4k60') video.style.filter = 'contrast(1.1) saturate(1.15) brightness(1.1)'; 
         if(qual === '8k30') video.style.filter = 'contrast(1.15) saturate(1.2) brightness(1.1)';
-
-        OS.alert(`Video Engine: Enhancing to ${qual.toUpperCase()}`);
       },
-
-      setGain: (band, val) => {
-        MoviesApp.initContext();
-        if(MoviesApp.eq && MoviesApp.eq[band]) MoviesApp.eq[band].gain.value = parseFloat(val);
-      },
-
+      setGain: (band, val) => { MoviesApp.initContext(); if(MoviesApp.eq && MoviesApp.eq[band]) MoviesApp.eq[band].gain.value = parseFloat(val); },
       toggleTheatre: () => {
-        MoviesApp.initContext();
-        MoviesApp.theatreActive = !MoviesApp.theatreActive;
+        MoviesApp.initContext(); MoviesApp.theatreActive = !MoviesApp.theatreActive;
         const btn = $('theatreToggle');
-        if(!btn) return;
-        
         if(MoviesApp.theatreActive) {
-            btn.classList.add('active');
-            if(MoviesApp.theatreBass && MoviesApp.theatreBass.gain) MoviesApp.theatreBass.gain.setTargetAtTime(8, MoviesApp.ctx.currentTime, 0.1); 
-            if(MoviesApp.theatreDry && MoviesApp.theatreDry.gain) MoviesApp.theatreDry.gain.setTargetAtTime(0.6, MoviesApp.ctx.currentTime, 0.1); 
-            if(MoviesApp.theatreWet && MoviesApp.theatreWet.gain) MoviesApp.theatreWet.gain.setTargetAtTime(0.7, MoviesApp.ctx.currentTime, 0.1); 
-            OS.alert("Theatre Sound Activated: Cinematic Bass & Surround Reverb On.");
+            btn.classList.add('primary');
+            if(MoviesApp.theatreBass) MoviesApp.theatreBass.gain.setTargetAtTime(8, MoviesApp.ctx.currentTime, 0.1); 
+            if(MoviesApp.theatreDry) MoviesApp.theatreDry.gain.setTargetAtTime(0.6, MoviesApp.ctx.currentTime, 0.1); 
+            if(MoviesApp.theatreWet) MoviesApp.theatreWet.gain.setTargetAtTime(0.7, MoviesApp.ctx.currentTime, 0.1); 
+            OS.alert("Theatre Sound Activated.");
         } else {
-            btn.classList.remove('active');
-            if(MoviesApp.theatreBass && MoviesApp.theatreBass.gain) MoviesApp.theatreBass.gain.setTargetAtTime(0, MoviesApp.ctx.currentTime, 0.1);
-            if(MoviesApp.theatreDry && MoviesApp.theatreDry.gain) MoviesApp.theatreDry.gain.setTargetAtTime(1, MoviesApp.ctx.currentTime, 0.1);
-            if(MoviesApp.theatreWet && MoviesApp.theatreWet.gain) MoviesApp.theatreWet.gain.setTargetAtTime(0, MoviesApp.ctx.currentTime, 0.1);
+            btn.classList.remove('primary');
+            if(MoviesApp.theatreBass) MoviesApp.theatreBass.gain.setTargetAtTime(0, MoviesApp.ctx.currentTime, 0.1);
+            if(MoviesApp.theatreDry) MoviesApp.theatreDry.gain.setTargetAtTime(1, MoviesApp.ctx.currentTime, 0.1);
+            if(MoviesApp.theatreWet) MoviesApp.theatreWet.gain.setTargetAtTime(0, MoviesApp.ctx.currentTime, 0.1);
             OS.alert("Theatre Sound Deactivated.");
         }
       }
     };
 
-    /* ---------- AudioEngine ---------- */
     const AudioEngine = {
-      ctx: null, source: null, filters: {}, atmosNode: null, analyser: null, initialized: false,
-      atmosInput: null, atmosDry: null, atmosWet: null,
-
+      ctx: null, source: null, filters: {}, analyser: null, initialized: false, atmosDry: null, atmosWet: null, vizActive: false,
       initContext: () => {
-        if(AudioEngine.initialized) return;
-        const AC = window.AudioContext || window.webkitAudioContext;
-        if(!AC) return OS.alert('AudioContext not supported in this browser.');
-        AudioEngine.ctx = new AC();
-        const el = document.getElementById('mainAudio');
-        if(!el) return;
-        try {
-          AudioEngine.source = AudioEngine.ctx.createMediaElementSource(el);
-        } catch(e) {
-          console.warn('Could not create media element source:', e);
-        }
+        if(AudioEngine.initialized) { if(!AudioEngine.vizActive) { AudioEngine.vizActive=true; AudioEngine.drawViz(); } return; }
+        const AC = window.AudioContext || window.webkitAudioContext; if(!AC) return;
+        AudioEngine.ctx = new AC(); const el = document.getElementById('mainAudio');
+        try { AudioEngine.source = AudioEngine.ctx.createMediaElementSource(el); } catch(e) {}
 
-        const freqs = [60, 250, 500, 2000, 8000];
-        const types = ['lowshelf', 'peaking', 'peaking', 'peaking', 'highshelf'];
-        const keys = ['low', 'lowMid', 'mid', 'highMid', 'high'];
-        let prevNode = AudioEngine.source || null;
+        const freqs = [60, 250, 500, 2000, 8000]; const types = ['lowshelf', 'peaking', 'peaking', 'peaking', 'highshelf']; const keys = ['low', 'lowMid', 'mid', 'highMid', 'high'];
+        let prevNode = AudioEngine.source || AudioEngine.ctx.createGain();
+        if(!AudioEngine.source) prevNode.connect(AudioEngine.ctx.destination);
 
-        if(!prevNode) {
-          prevNode = AudioEngine.ctx.createGain();
-          prevNode.connect(AudioEngine.ctx.destination);
-        }
+        keys.forEach((k, i) => { const f = AudioEngine.ctx.createBiquadFilter(); f.frequency.value = freqs[i]; f.type = types[i]; f.gain.value = 0; prevNode.connect(f); prevNode = f; AudioEngine.filters[k] = f; });
 
-        keys.forEach((k, i) => {
-          const f = AudioEngine.ctx.createBiquadFilter();
-          f.frequency.value = freqs[i]; f.type = types[i]; f.gain.value = 0;
-          prevNode.connect(f); prevNode = f; AudioEngine.filters[k] = f;
-        });
+        const merger = AudioEngine.ctx.createChannelMerger(2); const splitter = AudioEngine.ctx.createChannelSplitter(2); const delay = AudioEngine.ctx.createDelay(); delay.delayTime.value = 0.01; 
+        const atmosInput = AudioEngine.ctx.createGain(); AudioEngine.atmosDry = AudioEngine.ctx.createGain(); AudioEngine.atmosWet = AudioEngine.ctx.createGain(); AudioEngine.atmosWet.gain.value = 0; 
 
-        const merger = AudioEngine.ctx.createChannelMerger(2);
-        const splitter = AudioEngine.ctx.createChannelSplitter(2);
-        const delay = AudioEngine.ctx.createDelay();
-        delay.delayTime.value = 0.01; 
-        
-        AudioEngine.atmosInput = AudioEngine.ctx.createGain();
-        AudioEngine.atmosDry = AudioEngine.ctx.createGain();
-        AudioEngine.atmosWet = AudioEngine.ctx.createGain();
-        AudioEngine.atmosWet.gain.value = 0; 
+        prevNode.connect(atmosInput); atmosInput.connect(AudioEngine.atmosDry); AudioEngine.atmosDry.connect(AudioEngine.ctx.destination);
+        try { atmosInput.connect(splitter); splitter.connect(delay, 1); splitter.connect(merger, 0, 0); delay.connect(merger); merger.connect(AudioEngine.atmosWet); AudioEngine.atmosWet.connect(AudioEngine.ctx.destination); } catch(e) { atmosInput.connect(AudioEngine.ctx.destination); }
 
-        prevNode.connect(AudioEngine.atmosInput);
-        AudioEngine.atmosInput.connect(AudioEngine.atmosDry);
-        AudioEngine.atmosDry.connect(AudioEngine.ctx.destination);
-
-        try {
-          AudioEngine.atmosInput.connect(splitter);
-          splitter.connect(delay, 1); 
-          splitter.connect(merger, 0, 0); 
-          delay.connect(merger); 
-          merger.connect(AudioEngine.atmosWet);
-          AudioEngine.atmosWet.connect(AudioEngine.ctx.destination);
-        } catch(e) {
-          AudioEngine.atmosInput.connect(AudioEngine.ctx.destination);
-        }
-
-        AudioEngine.analyser = AudioEngine.ctx.createAnalyser();
-        AudioEngine.analyser.fftSize = 64;
-        if(AudioEngine.atmosInput) AudioEngine.atmosInput.connect(AudioEngine.analyser);
-        
-        AudioEngine.initialized = true;
-        AudioEngine.setupViz();
+        AudioEngine.analyser = AudioEngine.ctx.createAnalyser(); AudioEngine.analyser.fftSize = 64; atmosInput.connect(AudioEngine.analyser);
+        AudioEngine.initialized = true; AudioEngine.vizActive = true; AudioEngine.setupViz();
       },
-
-      setGain: (band, val) => {
-        if(AudioEngine.filters && AudioEngine.filters[band]) AudioEngine.filters[band].gain.value = parseFloat(val);
-      },
-
+      setGain: (band, val) => { if(AudioEngine.filters && AudioEngine.filters[band]) AudioEngine.filters[band].gain.value = parseFloat(val); },
       toggleAtmos: () => {
-        if(!AudioEngine.initialized) {
-          AudioEngine.initContext();
-          if(!AudioEngine.initialized) return;
-        }
-        const btn = $('atmosBtn');
-        const isActive = btn && btn.classList.contains('active');
-        
+        if(!AudioEngine.initialized) AudioEngine.initContext();
+        const btn = $('atmosBtn'); const isActive = btn && btn.classList.contains('primary');
         if(isActive) {
-          if(btn) btn.classList.remove('active');
-          if(AudioEngine.atmosWet && AudioEngine.atmosWet.gain) AudioEngine.atmosWet.gain.setTargetAtTime(0, AudioEngine.ctx.currentTime, 0.1);
-          if(AudioEngine.atmosDry && AudioEngine.atmosDry.gain) AudioEngine.atmosDry.gain.setTargetAtTime(1, AudioEngine.ctx.currentTime, 0.1);
+          if(btn) btn.classList.remove('primary');
+          if(AudioEngine.atmosWet) AudioEngine.atmosWet.gain.setTargetAtTime(0, AudioEngine.ctx.currentTime, 0.1);
+          if(AudioEngine.atmosDry) AudioEngine.atmosDry.gain.setTargetAtTime(1, AudioEngine.ctx.currentTime, 0.1);
         } else {
-          if(btn) btn.classList.add('active');
-          if(AudioEngine.atmosWet && AudioEngine.atmosWet.gain) AudioEngine.atmosWet.gain.setTargetAtTime(0.8, AudioEngine.ctx.currentTime, 0.1);
-          if(AudioEngine.atmosDry && AudioEngine.atmosDry.gain) AudioEngine.atmosDry.gain.setTargetAtTime(0.4, AudioEngine.ctx.currentTime, 0.1);
+          if(btn) btn.classList.add('primary');
+          if(AudioEngine.atmosWet) AudioEngine.atmosWet.gain.setTargetAtTime(0.8, AudioEngine.ctx.currentTime, 0.1);
+          if(AudioEngine.atmosDry) AudioEngine.atmosDry.gain.setTargetAtTime(0.4, AudioEngine.ctx.currentTime, 0.1);
         }
       },
-
       playDemo: () => {
-        AudioEngine.initContext();
-        if(AudioEngine.ctx && AudioEngine.ctx.state === 'suspended') AudioEngine.ctx.resume();
-        const el = document.getElementById('mainAudio');
-        if(!el) return;
-        el.src = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3';
-        el.play().catch(()=>{});
-        document.getElementById('songTitle').innerText = "Demo Track";
-        OS.setBar("Playing Music", "anim-rgb"); 
+        AudioEngine.initContext(); if(AudioEngine.ctx && AudioEngine.ctx.state === 'suspended') AudioEngine.ctx.resume();
+        const el = document.getElementById('mainAudio'); el.src = 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3'; el.play().catch(()=>{});
+        document.getElementById('songTitle').innerText = "Demo Track"; OS.setBar("Playing Music", "anim-rgb"); 
       },
-
       loadLocal: (input) => {
-        AudioEngine.initContext();
-        if(AudioEngine.ctx && AudioEngine.ctx.state === 'suspended') AudioEngine.ctx.resume();
+        AudioEngine.initContext(); if(AudioEngine.ctx && AudioEngine.ctx.state === 'suspended') AudioEngine.ctx.resume();
         const file = input.files && input.files[0];
         if(file) {
-          const el = document.getElementById('mainAudio');
-          if(!el) return;
-          if(el._currentObjectURL) URL.revokeObjectURL(el._currentObjectURL);
-          const obj = URL.createObjectURL(file);
-          el._currentObjectURL = obj;
-          el.src = obj;
-          el.play().catch(()=>{});
-          document.getElementById('songTitle').innerText = file.name;
-          OS.setBar("Playing Music", "anim-dataflow");
+          const el = document.getElementById('mainAudio'); if(el._currentObjectURL) URL.revokeObjectURL(el._currentObjectURL);
+          const obj = URL.createObjectURL(file); el._currentObjectURL = obj; el.src = obj; el.play().catch(()=>{});
+          document.getElementById('songTitle').innerText = file.name; OS.setBar("Playing Music", "anim-dataflow");
         }
       },
-
-      stop: () => {
-        const el = document.getElementById('mainAudio');
-        if(el) el.pause();
-        OS.setBar("System Secure");
-      },
-
+      stop: () => { const el = document.getElementById('mainAudio'); if(el) el.pause(); OS.setBar("System Secure"); },
       setupViz: () => {
-        const canvas = document.getElementById('vizCanvas');
-        if(!canvas) return;
+        const canvas = document.getElementById('vizCanvas'); if(!canvas) return;
         function resizeCanvas() {
-          const ratio = window.devicePixelRatio || 1;
-          const w = canvas.clientWidth || 300;
-          const h = canvas.clientHeight || 60;
-          canvas.width = Math.max(1, Math.floor(w * ratio));
-          canvas.height = Math.max(1, Math.floor(h * ratio));
-          const ctx = canvas.getContext('2d');
-          ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+          const ratio = window.devicePixelRatio || 1; const w = canvas.clientWidth || 300; const h = canvas.clientHeight || 60;
+          canvas.width = Math.max(1, Math.floor(w * ratio)); canvas.height = Math.max(1, Math.floor(h * ratio));
+          const ctx = canvas.getContext('2d'); ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
         }
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
-        AudioEngine.drawViz();
+        resizeCanvas(); window.addEventListener('resize', resizeCanvas); AudioEngine.drawViz();
       },
-
       drawViz: () => {
-        const canvas = document.getElementById('vizCanvas');
-        if(!canvas || !AudioEngine.analyser) return;
-        const ctx = canvas.getContext('2d');
-        const w = canvas.width / (window.devicePixelRatio || 1);
-        const h = canvas.height / (window.devicePixelRatio || 1);
-        const bufferLength = AudioEngine.analyser.frequencyBinCount;
-        const dataArray = new Uint8Array(bufferLength);
-
+        const canvas = document.getElementById('vizCanvas'); if(!canvas || !AudioEngine.analyser) return;
+        const ctx = canvas.getContext('2d'); const w = canvas.width / (window.devicePixelRatio || 1); const h = canvas.height / (window.devicePixelRatio || 1);
+        const bufferLength = AudioEngine.analyser.frequencyBinCount; const dataArray = new Uint8Array(bufferLength);
         const draw = () => {
+          if (!AudioEngine.vizActive) return; // Prevent memory leak when closed
           requestAnimationFrame(draw);
-          if(!AudioEngine.analyser) return;
           AudioEngine.analyser.getByteFrequencyData(dataArray);
           ctx.clearRect(0,0,w,h);
-          const barW = (w / bufferLength) * 2.5;
-          let x = 0;
+          const barW = (w / bufferLength) * 2.5; let x = 0;
           for(let i=0; i<bufferLength; i++) {
-            const barH = dataArray[i] / 255 * h;
-            const r = Math.min(255, Math.floor(barH + 100));
-            ctx.fillStyle = `rgb(${r}, 92, 246)`;
-            ctx.fillRect(x, h-barH, barW, barH);
-            x += barW + 1;
+            const barH = dataArray[i] / 255 * h; const r = Math.min(255, Math.floor(barH + 100));
+            ctx.fillStyle = `rgb(${r}, 92, 246)`; ctx.fillRect(x, h-barH, barW, barH); x += barW + 1;
           }
         };
         draw();
       }
     };
 
-    /* ---------- Camera & Gallery ---------- */
     const Camera = {
       stream: null,
       start: async () => {
-        const v = $('camVideo');
-        if(!v) return;
-        try {
-          Camera.stream = await navigator.mediaDevices.getUserMedia({ video: true });
-          v.srcObject = Camera.stream;
-        } catch(e) { OS.alert("Camera access denied."); }
+        const v = $('camVideo'); if(!v) return;
+        try { Camera.stream = await navigator.mediaDevices.getUserMedia({ video: true }); v.srcObject = Camera.stream; } catch(e) { OS.alert("Camera access denied."); }
       },
-      stop: () => {
-        if(Camera.stream) Camera.stream.getTracks().forEach(t=>t.stop());
-        Camera.stream = null;
-        const v = $('camVideo');
-        if(v) v.srcObject = null;
-      },
+      stop: () => { if(Camera.stream) Camera.stream.getTracks().forEach(t=>t.stop()); Camera.stream = null; const v = $('camVideo'); if(v) v.srcObject = null; },
       snap: () => {
-        const v = $('camVideo');
-        if(!v) return;
-        const vw = v.videoWidth || 640;
-        const vh = v.videoHeight || 480;
-        const c = document.createElement('canvas');
-        c.width = vw; c.height = vh;
-        const ctx = c.getContext('2d');
+        const v = $('camVideo'); if(!v) return;
+        const vw = v.videoWidth || 640; const vh = v.videoHeight || 480;
+        const c = document.createElement('canvas'); c.width = vw; c.height = vh;
         try {
-          ctx.drawImage(v,0,0, vw, vh);
-          const data = c.toDataURL('image/jpeg');
-          Gallery.save(data);
-          const f = document.createElement('div');
-          f.style.position='fixed'; f.style.inset=0; f.style.background='white'; f.style.zIndex=999;
-          document.body.appendChild(f);
-          setTimeout(()=>f.remove(), 120);
-        } catch (err) {
-          OS.alert('Failed to capture photo.');
-        }
+          c.getContext('2d').drawImage(v,0,0, vw, vh); Gallery.save(c.toDataURL('image/jpeg'));
+          const f = document.createElement('div'); f.style.position='fixed'; f.style.inset=0; f.style.background='white'; f.style.zIndex=999;
+          document.body.appendChild(f); setTimeout(()=>f.remove(), 120);
+        } catch (err) { OS.alert('Failed to capture photo.'); }
       }
     };
 
     const Gallery = {
-      index: 0,
-      lastPhotos: [],
+      index: 0, lastPhotos: [],
       save: (data) => {
-        try {
-          const photos = JSON.parse(localStorage.getItem('darsh_photos') || '[]');
-          photos.unshift({id: Date.now(), data: data});
-          localStorage.setItem('darsh_photos', JSON.stringify(photos));
-          OS.alert('Photo saved to Gallery.');
-        } catch (err) {
-          OS.alert('Failed to save photo (storage limit).');
-        }
+        try { const photos = JSON.parse(localStorage.getItem('darsh_photos') || '[]'); photos.unshift({id: Date.now(), data: data}); localStorage.setItem('darsh_photos', JSON.stringify(photos)); OS.alert('Saved to Gallery.'); } catch (err) { OS.alert('Failed to save (storage full).'); }
       },
       render: () => {
-        const g = $('galleryGrid');
-        if(!g) return;
-        const photos = JSON.parse(localStorage.getItem('darsh_photos') || '[]');
-        g.innerHTML = '';
-        if(photos.length === 0) {
-          const eg = $('emptyGallery');
-          if(eg) eg.style.display='block';
-        } else {
-          const eg = $('emptyGallery');
-          if(eg) eg.style.display='none';
+        const g = $('galleryGrid'); if(!g) return;
+        const photos = JSON.parse(localStorage.getItem('darsh_photos') || '[]'); g.innerHTML = '';
+        if(photos.length === 0) { if($('emptyGallery')) $('emptyGallery').style.display='block'; } else {
+          if($('emptyGallery')) $('emptyGallery').style.display='none';
           photos.forEach((p, idx) => {
-            const el = document.createElement('div');
-            el.className = 'gallery-item';
-            el.innerHTML = `<img src="${p.data}" alt="photo" onclick="Gallery.openViewer(${idx})">
-                            <div class="gallery-btn-del" onclick="Gallery.moveToTrash(${p.id})">×</div>`;
+            const el = document.createElement('div'); el.className = 'gallery-item';
+            el.innerHTML = `<img src="${p.data}" alt="photo" onclick="Gallery.openViewer(${idx})"><div class="gallery-btn-del" onclick="Gallery.moveToTrash(${p.id})">×</div>`;
             g.appendChild(el);
           });
         }
       },
       moveToTrash: (id) => {
         try {
-          let photos = JSON.parse(localStorage.getItem('darsh_photos') || '[]');
-          const item = photos.find(p=>p.id === id);
-          if(!item) return;
-          const trash = JSON.parse(localStorage.getItem('darsh_trash') || '[]');
-          trash.unshift({...item, removedAt: Date.now(), type: 'photo'});
-          localStorage.setItem('darsh_trash', JSON.stringify(trash));
-          photos = photos.filter(p => p.id !== id);
-          localStorage.setItem('darsh_photos', JSON.stringify(photos));
-          Gallery.render();
-          OS.alert('Moved to Recycle Bin.');
-        } catch(e) {
-          OS.alert('Failed to delete photo.');
-        }
+          let photos = JSON.parse(localStorage.getItem('darsh_photos') || '[]'); const item = photos.find(p=>p.id === id); if(!item) return;
+          const trash = JSON.parse(localStorage.getItem('darsh_trash') || '[]'); trash.unshift({...item, removedAt: Date.now(), type: 'photo'});
+          localStorage.setItem('darsh_trash', JSON.stringify(trash)); photos = photos.filter(p => p.id !== id); localStorage.setItem('darsh_photos', JSON.stringify(photos));
+          Gallery.render(); OS.alert('Moved to Recycle Bin.');
+        } catch(e) {}
       },
       clearAll: () => {
-        const ok = confirm('Clear all photos? This moves them to Recycle Bin.');
-        if(!ok) return;
-        const photos = JSON.parse(localStorage.getItem('darsh_photos') || '[]');
-        const trash = JSON.parse(localStorage.getItem('darsh_trash') || '[]');
-        const moved = photos.map(p=>({...p, removedAt:Date.now(), type:'photo'}));
-        const newTrash = moved.concat(trash);
-        localStorage.setItem('darsh_trash', JSON.stringify(newTrash));
-        localStorage.setItem('darsh_photos', JSON.stringify([]));
-        Gallery.render();
-        OS.alert('All photos moved to Recycle Bin.');
+        const ok = confirm('Clear all photos?'); if(!ok) return;
+        const photos = JSON.parse(localStorage.getItem('darsh_photos') || '[]'); const trash = JSON.parse(localStorage.getItem('darsh_trash') || '[]');
+        const moved = photos.map(p=>({...p, removedAt:Date.now(), type:'photo'})); localStorage.setItem('darsh_trash', JSON.stringify(moved.concat(trash)));
+        localStorage.setItem('darsh_photos', JSON.stringify([])); Gallery.render();
       },
       openViewer: (index) => {
-        const photos = JSON.parse(localStorage.getItem('darsh_photos') || '[]');
-        if(!photos || photos.length === 0) return;
-        Gallery.lastPhotos = photos;
-        Gallery.index = index;
-        $('viewerImg').src = photos[index].data;
-        $('viewerModal').classList.add('open');
+        const photos = JSON.parse(localStorage.getItem('darsh_photos') || '[]'); if(!photos || photos.length === 0) return;
+        Gallery.lastPhotos = photos; Gallery.index = index; $('viewerImg').src = photos[index].data; $('viewerModal').classList.add('open');
       },
-      closeViewer: (ev) => {
-        if(ev && ev.target && ev.target.id === 'viewerModal') {
-          $('viewerModal').classList.remove('open');
-        }
-      },
-      prev: () => {
-        if(!Gallery.lastPhotos.length) return;
-        Gallery.index = (Gallery.index - 1 + Gallery.lastPhotos.length) % Gallery.lastPhotos.length;
-        $('viewerImg').src = Gallery.lastPhotos[Gallery.index].data;
-      },
-      next: () => {
-        if(!Gallery.lastPhotos.length) return;
-        Gallery.index = (Gallery.index + 1) % Gallery.lastPhotos.length;
-        $('viewerImg').src = Gallery.lastPhotos[Gallery.index].data;
-      },
-      downloadCurrent: () => {
-        const cur = Gallery.lastPhotos[Gallery.index];
-        if(!cur) return;
-        const a = document.createElement('a');
-        a.href = cur.data;
-        a.download = 'photo-' + cur.id + '.jpg';
-        a.click();
-      },
-      deleteCurrent: () => {
-        const cur = Gallery.lastPhotos[Gallery.index];
-        if(!cur) return;
-        Gallery.moveToTrash(cur.id);
-        $('viewerModal').classList.remove('open');
-      },
-      toggleFit: () => {
-        const img = $('viewerImg');
-        if(!img) return;
-        img.style.objectFit = img.style.objectFit === 'contain' ? 'cover' : 'contain';
-      }
+      closeViewer: (ev) => { if(ev && ev.target && ev.target.id === 'viewerModal') $('viewerModal').classList.remove('open'); },
+      prev: () => { if(!Gallery.lastPhotos.length) return; Gallery.index = (Gallery.index - 1 + Gallery.lastPhotos.length) % Gallery.lastPhotos.length; $('viewerImg').src = Gallery.lastPhotos[Gallery.index].data; },
+      next: () => { if(!Gallery.lastPhotos.length) return; Gallery.index = (Gallery.index + 1) % Gallery.lastPhotos.length; $('viewerImg').src = Gallery.lastPhotos[Gallery.index].data; },
+      deleteCurrent: () => { const cur = Gallery.lastPhotos[Gallery.index]; if(!cur) return; Gallery.moveToTrash(cur.id); $('viewerModal').classList.remove('open'); }
     };
 
-    /* =========================================
-       Files App
-       ========================================= */
     const FilesApp = {
       _list: [],
       render: () => {
-        const list = $('filesList');
-        if(!list) return;
-        FilesApp._list = JSON.parse(localStorage.getItem('darsh_files') || '[]');
-        $('filesCount').innerText = `${FilesApp._list.length} files`;
-
+        const list = $('filesList'); if(!list) return;
+        FilesApp._list = JSON.parse(localStorage.getItem('darsh_files') || '[]'); $('filesCount').innerText = `${FilesApp._list.length} files`;
         list.innerHTML = '';
         FilesApp._list.forEach((f, idx) => {
-          const el = document.createElement('div');
-          el.className = 'list-item';
-          const left = document.createElement('div');
-          left.style.display='flex';
-          left.style.alignItems='center';
-          left.style.gap='10px';
-          left.innerHTML = `<div style="font-size:22px">${FilesApp._iconFor(f)}</div><div><div style="font-weight:600">${f.name}</div><div class="muted" style="font-size:12px">${f.type} • ${new Date(f.added).toLocaleString()}</div></div>`;
-          const right = document.createElement('div');
-          right.style.display='flex';
-          right.style.gap='8px';
-          right.innerHTML = `<button class="btn" onclick="FilesApp.open(${idx})">Open</button><button class="btn danger" onclick="FilesApp.moveToTrash(${idx})">Delete</button>`;
-          el.appendChild(left);
-          el.appendChild(right);
+          const el = document.createElement('div'); el.className = 'list-item';
+          el.innerHTML = `<div style="display:flex; align-items:center; gap:10px;"><div style="font-size:22px">${FilesApp._iconFor(f)}</div><div><div style="font-weight:600">${f.name}</div><div class="muted" style="font-size:12px">${f.type}</div></div></div><div style="display:flex; gap:8px;"><button class="btn" onclick="FilesApp.open(${idx})">Open</button><button class="btn danger" onclick="FilesApp.moveToTrash(${idx})">Del</button></div>`;
           list.appendChild(el);
         });
       },
-
       upload: (input) => {
-        const files = Array.from(input.files || []);
-        if(files.length === 0) return;
+        const files = Array.from(input.files || []); if(files.length === 0) return;
         let stored = JSON.parse(localStorage.getItem('darsh_files') || '[]');
-        let count = 0;
-        const promises = files.map(file => {
-          return new Promise((res) => {
+        Promise.all(files.map(file => new Promise((res) => {
             const reader = new FileReader();
-            reader.onload = (e) => {
-              const data = e.target.result;
-              const item = { id: Date.now() + Math.floor(Math.random()*9999), name: file.name, type: file.type || FilesApp._guessType(file.name), data, added: Date.now() };
-              stored.unshift(item);
-              count++;
-              res();
-            };
-            if(file.size < (6 * 1024 * 1024)) { 
-              reader.readAsDataURL(file);
-            } else {
-              const obj = URL.createObjectURL(file);
-              const item = { id: Date.now() + Math.floor(Math.random()*9999), name: file.name, type: file.type || FilesApp._guessType(file.name), url: obj, added: Date.now(), large: true };
-              stored.unshift(item);
-              res();
-            }
-          });
-        });
-
-        Promise.all(promises).then(() => {
-          try { localStorage.setItem('darsh_files', JSON.stringify(stored)); } catch (e) {
-            OS.alert('Storage full or file too large. Try smaller files.');
-          }
-          FilesApp.render();
-          OS.alert(`Uploaded ${count} file(s).`);
+            reader.onload = (e) => { stored.unshift({ id: Date.now(), name: file.name, type: file.type || 'file', data: e.target.result, added: Date.now() }); res(); };
+            if(file.size < (6 * 1024 * 1024)) reader.readAsDataURL(file); else { stored.unshift({ id: Date.now(), name: file.name, type: file.type || 'file', url: URL.createObjectURL(file), added: Date.now(), large: true }); res(); }
+        }))).then(() => {
+          try { localStorage.setItem('darsh_files', JSON.stringify(stored)); FilesApp.render(); OS.alert('Uploaded.'); } catch (e) { OS.alert('Storage full. Try smaller files.'); }
         });
       },
-
       open: (idx) => {
-        const stored = JSON.parse(localStorage.getItem('darsh_files') || '[]');
-        const f = stored[idx];
-        if(!f) return;
-        if((f.type || '').startsWith('image') && (f.data || f.url)) {
-          OS.openApp('gallery'); 
-          if(f.data) {
-            const photos = JSON.parse(localStorage.getItem('darsh_photos') || '[]');
-            photos.unshift({id: f.id, data: f.data});
-            localStorage.setItem('darsh_photos', JSON.stringify(photos));
-            Gallery.render();
-            Gallery.openViewer(0);
-          } else if(f.url) {
-            const win = window.open('', '_blank');
-            if(win) win.document.write(`<img src="${f.url}" style="width:100%">`);
-            else OS.alert('Popup blocked.');
-          }
-        } else if((f.type || '').startsWith('video')) {
-          OS.openApp('movies');
-          setTimeout(()=> {
-            const vid = $('darshVideoPlayer');
-            if(!vid) return;
-            if(f.data) {
-              if(vid._currentObjectURL) URL.revokeObjectURL(vid._currentObjectURL);
-              const obj = f.data;
-              vid.src = obj;
-              vid.play().catch(()=>{});
-            } else if(f.url) {
-              vid.src = f.url;
-              vid.play().catch(()=>{});
-            }
-          }, 200);
-        } else {
-          if(f.data) {
-            const win = window.open('','_blank');
-            if(!win) return OS.alert('Popup blocked.');
-            win.document.write(`<iframe src="${f.data}" style="width:100%; height:100vh; border:none;"></iframe>`);
-          } else if(f.url) {
-            const win = window.open(f.url, '_blank');
-            if(!win) OS.alert('Popup blocked.');
-          }
-        }
+        const f = JSON.parse(localStorage.getItem('darsh_files') || '[]')[idx]; if(!f) return;
+        if((f.type || '').startsWith('image') && f.data) { const photos = JSON.parse(localStorage.getItem('darsh_photos') || '[]'); photos.unshift({id: f.id, data: f.data}); localStorage.setItem('darsh_photos', JSON.stringify(photos)); OS.openApp('gallery'); setTimeout(()=>Gallery.openViewer(0), 100); }
+        else if((f.type || '').startsWith('video')) { OS.openApp('movies'); setTimeout(()=> { const vid = $('darshVideoPlayer'); if(vid && f.data) { vid.src = f.data; vid.play().catch(()=>{}); } }, 200); }
       },
-
       moveToTrash: (idx) => {
-        const stored = JSON.parse(localStorage.getItem('darsh_files') || '[]');
-        const item = stored[idx];
-        if(!item) return;
-        const trash = JSON.parse(localStorage.getItem('darsh_trash') || '[]');
-        trash.unshift({...item, removedAt: Date.now(), type: 'file'});
-        localStorage.setItem('darsh_trash', JSON.stringify(trash));
-        stored.splice(idx,1);
-        localStorage.setItem('darsh_files', JSON.stringify(stored));
-        FilesApp.render();
-        OS.alert('File moved to Recycle Bin.');
+        const stored = JSON.parse(localStorage.getItem('darsh_files') || '[]'); const item = stored[idx]; if(!item) return;
+        const trash = JSON.parse(localStorage.getItem('darsh_trash') || '[]'); trash.unshift({...item, removedAt: Date.now(), type: 'file'});
+        localStorage.setItem('darsh_trash', JSON.stringify(trash)); stored.splice(idx,1); localStorage.setItem('darsh_files', JSON.stringify(stored)); FilesApp.render();
       },
-
-      exportAll: () => {
-        OS.alert('Export not implemented in this demo (browser limits).');
-      },
-
-      _guessType: (name) => {
-        const ext = (name.split('.').pop() || '').toLowerCase();
-        if(['jpg','jpeg','png','gif','webp'].includes(ext)) return 'image/' + ext;
-        if(['mp4','webm','mov'].includes(ext)) return 'video/' + ext;
-        if(['pdf'].includes(ext)) return 'application/pdf';
-        return 'application/octet-stream';
-      },
-
-      _iconFor: (f) => {
-        const t = (f.type || '').split('/')[0];
-        if(t === 'image') return '🖼️';
-        if(t === 'video') return '🎞️';
-        if(f.name && f.name.endsWith('.pdf')) return '📄';
-        return '📁';
-      }
+      _iconFor: (f) => { const t = (f.type || '').split('/')[0]; if(t === 'image') return '🖼️'; if(t === 'video') return '🎞️'; if(f.name && f.name.endsWith('.pdf')) return '📄'; return '📁'; }
     };
 
-    /* =========================================
-       Recycle Bin
-       ========================================= */
     const Recycle = {
       render: () => {
-        const list = $('recycleList');
-        if(!list) return;
-        const trash = JSON.parse(localStorage.getItem('darsh_trash') || '[]');
-        list.innerHTML = '';
-        if(trash.length === 0) {
-          list.innerHTML = '<div class="muted">Recycle Bin is empty.</div>';
-          return;
-        }
+        const list = $('recycleList'); if(!list) return;
+        const trash = JSON.parse(localStorage.getItem('darsh_trash') || '[]'); list.innerHTML = '';
+        if(trash.length === 0) { list.innerHTML = '<div class="muted">Empty.</div>'; return; }
         trash.forEach((t, idx) => {
-          const el = document.createElement('div');
-          el.className = 'list-item';
-          el.innerHTML = `<div style="display:flex; gap:12px; align-items:center;"><div style="font-size:22px">${t.type==='photo'?'🖼️': t.type==='file'?'📁':'📦'}</div>
-                          <div><div style="font-weight:600">${t.name || ('item-' + t.id)}</div><div class="muted" style="font-size:12px">Deleted: ${new Date(t.removedAt).toLocaleString()}</div></div></div>
-                          <div style="display:flex; gap:8px;">
-                            <button class="btn" onclick="Recycle.restore(${idx})">Restore</button>
-                            <button class="btn danger" onclick="Recycle.delPermanent(${idx})">Delete</button>
-                          </div>`;
+          const el = document.createElement('div'); el.className = 'list-item';
+          el.innerHTML = `<div style="display:flex; gap:12px; align-items:center;"><div style="font-size:22px">${t.type==='photo'?'🖼️':'📁'}</div><div><div style="font-weight:600">${t.name || 'Item'}</div></div></div><div style="display:flex; gap:8px;"><button class="btn" onclick="Recycle.restore(${idx})">Restore</button></div>`;
           list.appendChild(el);
         });
       },
       restore: (idx) => {
-        const trash = JSON.parse(localStorage.getItem('darsh_trash') || '[]');
-        const item = trash[idx];
-        if(!item) return;
-        if(item.type === 'photo') {
-          const photos = JSON.parse(localStorage.getItem('darsh_photos') || '[]');
-          photos.unshift({id: item.id, data: item.data});
-          localStorage.setItem('darsh_photos', JSON.stringify(photos));
-        } else if(item.type === 'file') {
-          const files = JSON.parse(localStorage.getItem('darsh_files') || '[]');
-          files.unshift(item);
-          localStorage.setItem('darsh_files', JSON.stringify(files));
-        }
-        trash.splice(idx,1);
-        localStorage.setItem('darsh_trash', JSON.stringify(trash));
-        Recycle.render();
-        Gallery.render();
-        FilesApp.render();
-        OS.alert('Item restored.');
+        const trash = JSON.parse(localStorage.getItem('darsh_trash') || '[]'); const item = trash[idx]; if(!item) return;
+        if(item.type === 'photo') { const photos = JSON.parse(localStorage.getItem('darsh_photos') || '[]'); photos.unshift({id: item.id, data: item.data}); localStorage.setItem('darsh_photos', JSON.stringify(photos)); }
+        else if(item.type === 'file') { const files = JSON.parse(localStorage.getItem('darsh_files') || '[]'); files.unshift(item); localStorage.setItem('darsh_files', JSON.stringify(files)); }
+        trash.splice(idx,1); localStorage.setItem('darsh_trash', JSON.stringify(trash)); Recycle.render(); Gallery.render(); FilesApp.render(); OS.alert('Restored.');
       },
-      delPermanent: (idx) => {
-        const trash = JSON.parse(localStorage.getItem('darsh_trash') || '[]');
-        trash.splice(idx,1);
-        localStorage.setItem('darsh_trash', JSON.stringify(trash));
-        Recycle.render();
-        OS.alert('Item permanently deleted.');
-      },
-      empty: () => {
-        const ok = confirm('Empty Recycle Bin? This will permanently delete items.');
-        if(!ok) return;
-        localStorage.setItem('darsh_trash','[]');
-        Recycle.render();
-        OS.alert('Recycle Bin emptied.');
-      }
+      empty: () => { const ok = confirm('Empty Recycle Bin?'); if(ok) { localStorage.setItem('darsh_trash','[]'); Recycle.render(); } }
     };
 
-    /* =========================================
-       App Store
-       ========================================= */
     const Store = {
       render: () => {
-        const list = $('storeList');
-        if(!list) return;
-        list.innerHTML = '';
+        const list = $('storeList'); if(!list) return; list.innerHTML = '';
         const installed = safeParse('darsh_installed', []);
-        const storeApps = AVAILABLE_APPS.filter(a => a.store);
-        storeApps.forEach(a => {
+        AVAILABLE_APPS.filter(a => a.store).forEach(a => {
           const isInstalled = installed.includes(a.id);
-          const el = document.createElement('div');
-          el.className = 'list-item';
-          el.innerHTML = `<div style="display:flex; gap:12px; align-items:center;"><div style="font-size:22px">${a.icon}</div><div><div style="font-weight:600">${a.name}</div><div class="muted" style="font-size:12px">${a.id}</div></div></div>
-                          <div style="display:flex; gap:8px;">
-                            <button class="btn ${isInstalled?'':'primary'}" onclick="Store.toggleInstall('${a.id}', this)">${isInstalled?'Uninstall':'Install'}</button>
-                          </div>`;
+          const el = document.createElement('div'); el.className = 'list-item';
+          el.innerHTML = `<div style="display:flex; gap:12px; align-items:center;"><div style="font-size:22px">${a.icon}</div><div><div style="font-weight:600">${a.name}</div></div></div><button class="btn ${isInstalled?'danger':'primary'}" onclick="Store.toggleInstall('${a.id}')">${isInstalled?'Remove':'Install'}</button>`;
           list.appendChild(el);
         });
       },
-      toggleInstall: (id, btn) => {
+      toggleInstall: (id) => {
         let installed = safeParse('darsh_installed', []);
-        if(!Array.isArray(installed)) installed = [];
-        const has = installed.includes(id);
-        if(has) {
-          installed = installed.filter(x=>x!==id);
-          OS.alert('Uninstalled ' + id);
-        } else {
-          installed.push(id);
-          OS.alert('Installed ' + id);
-        }
-        safeSet('darsh_installed', installed);
-        OS.initDesktop();
-        Store.render();
+        if(installed.includes(id)) installed = installed.filter(x=>x!==id); else installed.push(id);
+        safeSet('darsh_installed', installed); OS.initDesktop(); Store.render();
       }
     };
 
-    /* =========================================
-       TaskManager
-       ========================================= */
     const TaskManager = {
       render: () => {
-        const list = $('taskList');
-        if(!list) return;
+        const list = $('taskList'); if(!list) return;
         const wins = Array.from(document.querySelectorAll('.window.open')).map(w => ({id: w.id.replace('win_',''), title: w.querySelector('.win-title')?.innerText || w.id}));
-        list.innerHTML = '';
-        wins.forEach(w => {
-          const el = document.createElement('div');
-          el.className = 'list-item';
-          el.innerHTML = `<div style="font-weight:600">${w.title}</div><div style="display:flex; gap:8px;"><button class="btn danger" onclick="TaskManager.kill('${w.id}')">Close</button></div>`;
-          list.appendChild(el);
+        list.innerHTML = ''; wins.forEach(w => {
+          const el = document.createElement('div'); el.className = 'list-item'; el.innerHTML = `<div style="font-weight:600">${w.title}</div><button class="btn danger" onclick="OS.close('${w.id}'); TaskManager.render()">Close</button>`; list.appendChild(el);
         });
-        const up = Math.floor(((Date.now() - (window.__darsh_boot_time||Date.now()))/1000));
-        $('taskUptime').innerText = `Uptime: ${up}s`;
+        $('taskUptime').innerText = `Uptime: ${Math.floor(((Date.now() - (window.__darsh_boot_time||Date.now()))/1000))}s`;
       },
-      kill: (id) => {
-        OS.close('win_' + id);
-        TaskManager.render();
-      },
-      killAll: () => {
-        document.querySelectorAll('.window.open').forEach(w => w.classList.remove('open'));
-        Camera.stop();
-        TaskManager.render();
-      }
+      killAll: () => { document.querySelectorAll('.window.open').forEach(w => OS.close(w.id)); TaskManager.render(); }
     };
 
-    /* =========================================
-       Antivirus
-       ========================================= */
     const Antivirus = {
-      render: () => {
-        const log = $('antivirusLog');
-        if(!log) return;
-        log.innerHTML = '<div class="muted">Ready to scan.</div>';
-      },
-      scan: () => {
-        const log = $('antivirusLog');
-        if(!log) return;
-        log.innerHTML = '<div class="muted">Quick scan started...</div>';
-        setTimeout(()=> {
-          log.innerHTML = '<div class="list-item">No threats found in photos.</div><div class="list-item">No threats found in files.</div>';
-          OS.alert('Quick scan complete. No threats found.');
-        }, 1200);
-      },
-      fullScan: () => {
-        const log = $('antivirusLog');
-        if(!log) return;
-        log.innerHTML = '<div class="muted">Full scan running...</div>';
-        setTimeout(()=> {
-          log.innerHTML = '<div class="list-item">Scanned 3 folders. No threats.</div><div class="list-item">System healthy.</div>';
-          OS.alert('Full scan complete. System is clean.');
-        }, 2200);
-      }
+      render: () => { if($('antivirusLog')) $('antivirusLog').innerHTML = '<div class="muted">Ready.</div>'; },
+      scan: () => { if($('antivirusLog')) $('antivirusLog').innerHTML = '<div class="muted">Scanning...</div>'; setTimeout(()=> { $('antivirusLog').innerHTML = '<div class="list-item">No threats found.</div>'; OS.alert('Quick scan complete.'); }, 1200); },
+      fullScan: () => { if($('antivirusLog')) $('antivirusLog').innerHTML = '<div class="muted">Running...</div>'; setTimeout(()=> { $('antivirusLog').innerHTML = '<div class="list-item">System clean.</div>'; OS.alert('Full scan complete.'); }, 2200); }
     };
 
-    /* =========================================
-       Notes
-       ========================================= */
     const Notes = {
       render: () => {
-        const list = $('notesList');
-        const notes = JSON.parse(localStorage.getItem('darsh_notes') || '[]');
-        list.innerHTML = '';
+        const list = $('notesList'); const notes = JSON.parse(localStorage.getItem('darsh_notes') || '[]'); list.innerHTML = '';
         notes.forEach((n, idx) => {
-          const el = document.createElement('div');
-          el.className = 'list-item';
-          el.innerHTML = `<div><div style="font-weight:700">${n.title || 'Untitled'}</div><div class="muted" style="font-size:12px">${new Date(n.updated).toLocaleString()}</div></div>
-                          <div style="display:flex; gap:8px;"><button class="btn" onclick="Notes.open(${idx})">Open</button><button class="btn danger" onclick="Notes.del(${idx})">Delete</button></div>`;
+          const el = document.createElement('div'); el.className = 'list-item';
+          el.innerHTML = `<div><div style="font-weight:700">${n.title || 'Untitled'}</div></div><div style="display:flex; gap:8px;"><button class="btn" onclick="Notes.open(${idx})">Open</button><button class="btn danger" onclick="Notes.del(${idx})">Del</button></div>`;
           list.appendChild(el);
         });
       },
       save: () => {
-        const title = $('noteTitle').value.trim();
-        const body = $('noteBody').value.trim();
-        if(!body) return OS.alert('Note empty.');
-        const notes = JSON.parse(localStorage.getItem('darsh_notes') || '[]');
-        notes.unshift({title, body, updated: Date.now()});
-        localStorage.setItem('darsh_notes', JSON.stringify(notes));
-        $('noteTitle').value = ''; $('noteBody').value = '';
-        Notes.render();
-        OS.alert('Note saved.');
+        const title = $('noteTitle').value.trim(); const body = $('noteBody').value.trim(); if(!body) return;
+        const notes = JSON.parse(localStorage.getItem('darsh_notes') || '[]'); notes.unshift({title, body, updated: Date.now()}); localStorage.setItem('darsh_notes', JSON.stringify(notes));
+        $('noteTitle').value = ''; $('noteBody').value = ''; Notes.render();
       },
-      open: (idx) => {
-        const notes = JSON.parse(localStorage.getItem('darsh_notes') || '[]');
-        const n = notes[idx];
-        if(!n) return;
-        $('noteTitle').value = n.title;
-        $('noteBody').value = n.body;
-      },
-      del: (idx) => {
-        const notes = JSON.parse(localStorage.getItem('darsh_notes') || '[]');
-        notes.splice(idx,1);
-        localStorage.setItem('darsh_notes', JSON.stringify(notes));
-        Notes.render();
-      }
+      open: (idx) => { const n = JSON.parse(localStorage.getItem('darsh_notes') || '[]')[idx]; if(n) { $('noteTitle').value = n.title; $('noteBody').value = n.body; } },
+      del: (idx) => { const notes = JSON.parse(localStorage.getItem('darsh_notes') || '[]'); notes.splice(idx,1); localStorage.setItem('darsh_notes', JSON.stringify(notes)); Notes.render(); }
     };
 
-    /* =========================================
-       Calculator
-       ========================================= */
     const Calc = {
       buf: '',
-      render: () => {
-        $('calcDisplay').value = Calc.buf || '';
-      },
-      press: (k) => {
-        Calc.buf = (Calc.buf || '') + k;
-        Calc.render();
-      },
-      equals: () => {
-        try {
-          // eslint-disable-next-line no-eval
-          const res = eval(Calc.buf || '0');
-          Calc.buf = String(res);
-          Calc.render();
-        } catch(e) {
-          OS.alert('Invalid expression.');
-        }
-      }
+      render: () => { $('calcDisplay').value = Calc.buf || ''; },
+      press: (k) => { Calc.buf = (Calc.buf || '') + k; Calc.render(); },
+      clear: () => { Calc.buf = ''; Calc.render(); },
+      equals: () => { try { const res = Function('"use strict";return (' + (Calc.buf || '0') + ')')(); Calc.buf = String(res); Calc.render(); } catch(e) { OS.alert('Error'); } }
     };
 
-    /* =========================================
-       AI
-       ========================================= */
     const AI = {
       send: () => {
-        const inp = $('aiInput');
-        if(!inp) return;
-        const txt = inp.value;
-        if(!txt) return;
-        AI.msg(txt, 'user');
-        inp.value = '';
-        
-        OS.setBar("Processing...", "anim-ai"); 
-
+        const inp = $('aiInput'); if(!inp) return; const txt = inp.value; if(!txt) return;
+        AI.msg(txt, 'user'); inp.value = ''; OS.setBar("Processing...", "anim-ai"); 
         setTimeout(() => {
           let r = "I am processing that request.";
-          if(txt.match(/hello|hi/i)) r = "Hello, I am Darsh AI. How can I help you?";
-          else if(txt.match(/music|song/i)) r = "You can play music in the Music app.";
-          else if(txt.match(/time/i)) r = "It is " + new Date().toLocaleTimeString();
-          
-          AI.msg(r, 'ai');
-          AI.speak(r);
+          if(txt.match(/hello|hi/i)) r = "Hello, I am Darsh AI. How can I help you?"; else if(txt.match(/music|song/i)) r = "You can play music in the Music app.";
+          AI.msg(r, 'ai'); AI.speak(r);
         }, 600);
       },
       msg: (txt, type) => {
-        const box = $('chatBox');
-        if(!box) return;
-        const d = document.createElement('div');
-        d.style.padding = '8px'; d.style.borderRadius = '8px'; d.style.marginBottom = '5px';
-        d.style.maxWidth = '80%';
-        if(type === 'user') { d.style.background = 'var(--accent)'; d.style.marginLeft = 'auto'; }
-        else { d.style.background = 'rgba(255,255,255,0.1)'; }
-        d.innerText = txt;
-        box.appendChild(d);
-        box.scrollTop = box.scrollHeight;
+        const box = $('chatBox'); if(!box) return;
+        const d = document.createElement('div'); d.style.padding = '8px'; d.style.borderRadius = '8px'; d.style.marginBottom = '5px'; d.style.maxWidth = '80%'; d.style.fontSize = '14px';
+        if(type === 'user') { d.style.background = 'var(--accent)'; d.style.marginLeft = 'auto'; } else { d.style.background = 'rgba(255,255,255,0.1)'; }
+        d.innerText = txt; box.appendChild(d); box.scrollTop = box.scrollHeight;
       },
       speak: (txt) => {
-        if(window.speechSynthesis) {
-          const u = new SpeechSynthesisUtterance(txt);
-          window.speechSynthesis.speak(u);
-          OS.setBar("Darsh AI Speaking...", "anim-scanline"); 
-          u.onend = () => OS.setBar("System Secure");
-        } else {
-          OS.setBar("System Secure");
-        }
+        if(window.speechSynthesis) { const u = new SpeechSynthesisUtterance(txt); window.speechSynthesis.speak(u); OS.setBar("Speaking...", "anim-scanline"); u.onend = () => OS.setBar("System Secure"); } else { OS.setBar("System Secure"); }
       },
       listen: () => {
         const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition || window.mozSpeechRecognition || window.msSpeechRecognition;
-        if(!SpeechRec) return OS.alert('Voice Recognition API not supported in this browser.');
+        if(!SpeechRec) return OS.alert('Voice Recognition API not supported.');
         try {
-          const r = new SpeechRec();
-          r.lang = 'en-US';
-          r.onstart = () => { OS.setBar("Listening...", "anim-pulse"); }; 
-          r.onresult = (e) => {
-            const t = e.results[0][0].transcript;
-            $('aiInput').value = t;
-            AI.send();
-          };
-          r.onend = () => OS.setBar("System Secure");
-          r.start();
-        } catch (err) {
-          OS.alert('Voice recognition failed to start.');
-        }
+          const r = new SpeechRec(); r.lang = 'en-US'; r.onstart = () => { OS.setBar("Listening...", "anim-pulse"); }; 
+          r.onresult = (e) => { $('aiInput').value = e.results[0][0].transcript; AI.send(); }; r.onend = () => OS.setBar("System Secure"); r.start();
+        } catch (err) {}
       }
     };
 
-    /* ===== initialize boot time & OS ===== */
     window.__darsh_boot_time = Date.now();
-    window.onload = () => {
-      OS.init();
-      setTimeout(()=>OS.alert('Welcome to Darsh OS — new features added.'), 700);
-    };
-
+    window.onload = () => { OS.init(); setTimeout(()=>OS.alert('Welcome to Darsh OS.'), 700); };
   </script>
 </body>
 </html>
