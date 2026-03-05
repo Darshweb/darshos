@@ -25,12 +25,27 @@
       margin: 0;
       height: 100vh;
       width: 100vw;
-      background: #000;
+      background: radial-gradient(circle at 50% 120%, #1e1b4b, #000);
+      transition: background-image 0.5s ease, transform 0.25s ease;
       font-family: var(--font-stack);
       color: var(--text-main);
       overflow: hidden;
-      background: radial-gradient(circle at 50% 120%, #1e1b4b, #000);
-      transition: background-image 0.5s ease;
+      transform: translateZ(0);
+    }
+
+    /* Parallax wallpaper layer */
+    .wallpaper-layer {
+      position: fixed;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      will-change: transform;
+      transition: transform 0.12s linear;
+      z-index: -2;
+      filter: saturate(1.05) contrast(1.02);
+    }
+    .wallpaper-overlay {
+      position: fixed; inset:0; background:linear-gradient(180deg, rgba(0,0,0,0.12) 0%, rgba(0,0,0,0.45) 100%); z-index:-1;
     }
 
     /* --- OS ALERTS --- */
@@ -70,9 +85,10 @@
       background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.1);
       color: white; font-size: 24px; font-weight: 400; cursor: pointer;
       display: flex; align-items: center; justify-content: center;
-      transition: background 0.2s;
+      transition: background 0.2s, transform 0.08s;
+      user-select: none;
     }
-    .num-btn:active { background: rgba(255,255,255,0.3); }
+    .num-btn:active { transform: scale(0.97); background: rgba(255,255,255,0.2); }
 
     /* --- SYSTEM BAR --- */
     #systemBar {
@@ -81,6 +97,7 @@
       border-bottom: 1px solid var(--border);
       display: flex; align-items: center; justify-content: space-between; padding: 0 20px;
       z-index: 1000; cursor: pointer; transition: 0.3s;
+      user-select: none;
     }
     #systemBar.active-media {
       background: linear-gradient(90deg, #312e81, #4c1d95, #312e81);
@@ -88,41 +105,9 @@
     }
     @keyframes gradientPulse { 0% { background-position: 100% 0%; } 100% { background-position: -100% 0%; } }
 
-    /* --- 10 NEW SYSTEM BAR ANIMATIONS --- */
-    #systemBar.anim-shimmer { background: linear-gradient(90deg, rgba(10,10,12,0.9) 0%, rgba(255,255,255,0.2) 50%, rgba(10,10,12,0.9) 100%); background-size: 200% 100%; animation: shimmer 2s infinite; }
-    @keyframes shimmer { 0% { background-position: -100% 0; } 100% { background-position: 100% 0; } }
-
-    #systemBar.anim-pulse { animation: pulseGlow 1.5s infinite alternate ease-in-out; }
-    @keyframes pulseGlow { 0% { box-shadow: 0 0 5px var(--accent); } 100% { box-shadow: 0 0 20px var(--accent), inset 0 0 10px var(--accent); } }
-
-    #systemBar.anim-rgb { background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3); background-size: 300% 100%; animation: rgbWave 3s linear infinite; }
-    @keyframes rgbWave { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
-
-    #systemBar.anim-warning { background: rgba(239, 68, 68, 0.2); animation: warningFlash 1s infinite alternate; border-bottom: 1px solid var(--danger); }
-    @keyframes warningFlash { 0% { background-color: rgba(239,68,68,0.1); box-shadow: 0 0 5px var(--danger); } 100% { background-color: rgba(239,68,68,0.4); box-shadow: 0 0 20px var(--danger); } }
-
-    #systemBar.anim-success { background: rgba(16, 185, 129, 0.2); border-bottom: 1px solid var(--success); animation: successPulse 1.5s ease-out infinite; }
-    @keyframes successPulse { 0% { box-shadow: 0 0 0 0 rgba(16,185,129,0.7); } 100% { box-shadow: 0 0 0 15px rgba(16,185,129,0); } }
-
-    #systemBar.anim-ai { position: relative; overflow: hidden; }
-    #systemBar.anim-ai::after { content: ''; position: absolute; bottom: 0; left: 0; height: 2px; width: 30%; background: #fff; box-shadow: 0 -2px 10px #fff; animation: aiScan 1.2s ease-in-out infinite alternate; }
-    @keyframes aiScan { 0% { left: 0%; } 100% { left: 70%; } }
-
-    #systemBar.anim-scanline { background: repeating-linear-gradient(0deg, rgba(255,255,255,0.05) 0px, rgba(255,255,255,0.05) 1px, transparent 1px, transparent 3px), rgba(10,10,12,0.8); animation: scanlineMove 5s linear infinite; }
-    @keyframes scanlineMove { 0% { background-position: 0 0; } 100% { background-position: 0 100px; } }
-
-    #systemBar.anim-neon { border-bottom: 2px solid #0ff; animation: neonFlicker 1.5s infinite alternate; }
-    @keyframes neonFlicker { 0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { box-shadow: 0 2px 15px #0ff, inset 0 -2px 10px #0ff; opacity: 1; } 20%, 24%, 55% { box-shadow: none; opacity: 0.8; } }
-
-    #systemBar.anim-matrix { background: linear-gradient(180deg, rgba(0,255,0,0) 0%, rgba(0,255,0,0.15) 100%); border-bottom: 1px solid #0f0; animation: matrixDrip 1.5s linear infinite; }
-    @keyframes matrixDrip { 0% { background-position: 0 -44px; } 100% { background-position: 0 44px; } }
-
-    #systemBar.anim-dataflow { background: repeating-linear-gradient(45deg, rgba(124,58,237,0.15) 0px, rgba(124,58,237,0.15) 10px, rgba(10,10,12,0.8) 10px, rgba(10,10,12,0.8) 20px); background-size: 28px 28px; animation: dataFlow 1s linear infinite; }
-    @keyframes dataFlow { 0% { background-position: 0 0; } 100% { background-position: 28px 28px; } }
-
     /* --- WIDGETS --- */
     .widgets-area {
-      display: flex; gap: 15px; width: 100%; max-width: 500px; padding: 0 10px;
+      display: flex; gap: 15px; width: 100%; max-width: 960px; padding: 0 10px;
       margin-bottom: 25px; overflow-x: auto; scroll-snap-type: x mandatory;
     }
     .widgets-area::-webkit-scrollbar { display: none; }
@@ -139,7 +124,7 @@
     /* --- DESKTOP & GRID --- */
     .desktop { padding-top: 70px; display: flex; flex-direction: column; align-items: center; height: 100%; }
     .app-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; max-width: 500px; padding: 10px; width: 100%; }
-    .app-item { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; transition: transform 0.2s; }
+    .app-item { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; transition: transform 0.2s, opacity 0.2s; }
     .app-item:hover { transform: scale(1.08); }
     .app-icon {
       width: 62px; height: 62px; border-radius: 16px; background: var(--glass);
@@ -177,24 +162,12 @@
       padding: 10px 18px; border-radius: 10px; border: 1px solid var(--border); background: var(--glass);
       color: white; cursor: pointer; font-size: 13px; font-weight: 500; transition: 0.2s; display: inline-block;
     }
-    .btn:hover { background: var(--glass-high); }
+    .btn:hover { background: var(--glass-high); transform: translateY(-2px); }
     .btn.primary { background: var(--accent); border-color: var(--accent); }
     .btn.primary:hover { background: var(--accent-glow); box-shadow: 0 0 20px rgba(124, 58, 237, 0.4); }
 
     input[type="range"] { -webkit-appearance: none; width: 100%; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; }
     input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: white; cursor: pointer; box-shadow: 0 0 10px rgba(0,0,0,0.5); }
-
-    /* --- AUDIO VISUALIZER & EQ --- */
-    .eq-container { display: flex; gap: 10px; justify-content: space-between; margin-top: 15px; }
-    .slider-group { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1; }
-    .slider-v { writing-mode: bt-lr; -webkit-appearance: slider-vertical; width: 8px; height: 100px; }
-    .viz-canvas { width: 100%; height: 60px; background: rgba(0,0,0,0.2); border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border); }
-    
-    .atmos-toggle {
-      display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.03); padding: 10px; border-radius: 10px; cursor: pointer; margin-top: 10px; transition: 0.2s;
-    }
-    .atmos-toggle.active { background: rgba(124, 58, 237, 0.2); border: 1px solid var(--accent); }
-    .badge { padding: 2px 6px; border-radius: 4px; background: black; font-size: 10px; font-weight: bold; color: var(--accent-glow); border: 1px solid var(--accent); }
 
     /* --- GALLERY --- */
     .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 10px; }
@@ -202,11 +175,23 @@
       aspect-ratio: 1; background: #000; border-radius: 8px; overflow: hidden; position: relative; border: 1px solid var(--border); cursor: pointer;
     }
     .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
-    .gallery-item:hover img { transform: scale(1.1); }
+    .gallery-item:hover img { transform: scale(1.08); }
     .gallery-btn-del {
       position: absolute; top: 5px; right: 5px; background: rgba(0,0,0,0.6); color: var(--danger);
       width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px;
     }
+
+    /* gallery full view modal */
+    .viewer-modal {
+      position: fixed; inset: 0; display: none; align-items:center; justify-content:center; z-index: 2000;
+      background: rgba(0,0,0,0.85); backdrop-filter: blur(6px);
+    }
+    .viewer-modal.open { display:flex; }
+    .viewer-content { max-width: 95vw; max-height: 92vh; background: transparent; display:flex; align-items:center; justify-content:center; position:relative; }
+    .viewer-img { max-width: 100%; max-height: 100%; border-radius: 8px; box-shadow: 0 20px 80px rgba(0,0,0,0.8); }
+    .viewer-controls { position:absolute; top:20px; right:20px; display:flex; gap:10px; }
+    .viewer-nav { position:absolute; left:10px; top:50%; transform:translateY(-50%); font-size:40px; cursor:pointer; user-select:none; color:white; opacity:0.8; }
+    .viewer-nav.right { left:auto; right:10px; }
 
     /* --- DOCK --- */
     .dock {
@@ -216,14 +201,14 @@
       display: flex; align-items: center; gap: 18px; box-shadow: 0 20px 50px rgba(0,0,0,0.6); z-index: 900;
     }
     .dock .app-icon { width: 50px; height: 50px; font-size: 22px; transition: 0.2s cubic-bezier(0.2, 2, 0.4, 1); }
-    .dock .app-icon:hover { transform: translateY(-10px) scale(1.2); }
+    .dock .app-icon:hover { transform: translateY(-10px) scale(1.16); }
 
-    /* --- MOVIES APP SPECIFIC --- */
-    .quality-btn { transition: 0.3s ease; font-size: 11px; }
+    /* small helpers */
+    .muted { color: var(--text-muted); font-size: 13px; }
+    .list { display:flex; flex-direction:column; gap:10px; }
+    .list-item { padding:10px; background: rgba(255,255,255,0.02); border-radius:8px; display:flex; justify-content:space-between; align-items:center; border:1px solid var(--border); }
 
-    /* =========================================
-       RESPONSIVE DESIGN (MOBILE & LAPTOP)
-       ========================================= */
+    /* responsive */
     @media (min-width: 1024px) {
       .app-grid { max-width: 800px; grid-template-columns: repeat(5, 1fr); gap: 40px; }
       .app-icon { width: 75px; height: 75px; font-size: 34px; }
@@ -246,16 +231,18 @@
       #systemBar { font-size: 11px; padding: 0 10px; }
       .win-title { font-size: 14px; }
     }
-
   </style>
 </head>
 <body>
+
+  <div id="wallpaperLayer" class="wallpaper-layer"></div>
+  <div class="wallpaper-overlay" aria-hidden="true"></div>
 
   <div id="osAlert" class="os-alert">Notification</div>
 
   <div id="lockScreen" class="hidden">
     <div class="lock-clock" id="lockClock">12:00</div>
-    <div style="margin-bottom:20px; font-weight:300;">Enter PIN to Unlock</div>
+    <div style="margin-bottom:20px; font-weight:300;" id="pinStateText">Enter PIN to Unlock</div>
     <div class="pin-display" id="pinDots">
       <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
     </div>
@@ -390,7 +377,7 @@
 
           <div id="moviesAudioPanel" style="display: none; background: rgba(255,255,255,0.03); padding: 15px; border-radius: 12px; border: 1px solid var(--border);">
               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                  <span style="font-size: 11px; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px;">Cinema Equalizer</span>
+                  <span style="font-size: 11px; text-transform: uppercase; color:var(--text-muted); letter-spacing: 1px;">Cinema Equalizer</span>
                   <div class="atmos-toggle" id="theatreToggle" onclick="MoviesApp.toggleTheatre()" style="margin: 0;">
                       <span class="badge" style="background: #ef4444; color: white;">TH</span>
                       <span>Theatre Sound</span>
@@ -427,6 +414,13 @@
       <button class="btn-close" onclick="OS.close('win_gallery')">×</button>
     </div>
     <div class="win-content">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <div class="muted">Gallery</div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn" onclick="Gallery.clearAll()">Clear All</button>
+          <button class="btn" onclick="OS.openApp('recycle')">Open Recycle Bin</button>
+        </div>
+      </div>
       <div id="galleryGrid" class="gallery-grid"></div>
       <div id="emptyGallery" style="text-align:center; color:var(--text-muted); margin-top:50px; display:none;">No photos yet.<br>Use Camera to take some.</div>
     </div>
@@ -434,126 +428,313 @@
 
   <div class="window" id="win_settings">
     <div class="win-header">
-      <div class="win-title">Control Panel</div>
+      <div class="win-title">Settings</div>
       <button class="btn-close" onclick="OS.close('win_settings')">×</button>
     </div>
     <div class="win-content">
-      
-      <div style="margin-bottom:20px; padding:15px; background:rgba(255,255,255,0.03); border-radius:10px;">
-        <h4>Personalization</h4>
-        <p style="color:var(--text-muted); font-size:13px; margin-top:0;">Customize your OS backgrounds.</p>
-        <div style="display:flex; flex-wrap:wrap; gap:10px;">
-          <label class="btn">
-            Set Home Wallpaper
-            <input type="file" style="display:none" accept="image/*" onchange="SettingsModule.setWallpaper(this, 'home')">
-          </label>
-          <label class="btn">
-            Set Lock Wallpaper
-            <input type="file" style="display:none" accept="image/*" onchange="SettingsModule.setWallpaper(this, 'lock')">
-          </label>
-          <button class="btn danger" onclick="SettingsModule.resetWallpapers()">Reset Default</button>
+      <div class="list">
+        <div class="list-item">
+          <div>
+            <div style="font-weight:600">Home Wallpaper</div>
+            <div class="muted" style="font-size:12px">Set desktop background</div>
+          </div>
+          <label class="btn primary">Upload <input type="file" style="display:none" accept="image/*" onchange="SettingsModule.setWallpaper(this, 'home')"></label>
+        </div>
+        <div class="list-item">
+          <div>
+            <div style="font-weight:600">Lock Screen Wallpaper</div>
+            <div class="muted" style="font-size:12px">Set lock screen background</div>
+          </div>
+          <label class="btn primary">Upload <input type="file" style="display:none" accept="image/*" onchange="SettingsModule.setWallpaper(this, 'lock')"></label>
+        </div>
+        <div class="list-item">
+          <div>
+            <div style="font-weight:600">Reset Wallpapers</div>
+            <div class="muted" style="font-size:12px">Restore default look</div>
+          </div>
+          <button class="btn danger" onclick="SettingsModule.resetWallpapers()">Reset</button>
+        </div>
+        <div class="list-item">
+          <div>
+            <div style="font-weight:600">Lock Screen PIN</div>
+            <div class="muted" style="font-size:12px">Set a 4-digit PIN</div>
+          </div>
+          <div style="display:flex; gap:8px;">
+            <input id="settingNewPin" type="password" placeholder="4 digits" maxlength="4" style="width:80px; padding:8px; border-radius:8px; border:1px solid var(--border); background:rgba(0,0,0,0.3); color:white;">
+            <button class="btn primary" onclick="Lock.setPin()">Save</button>
+          </div>
         </div>
       </div>
+    </div>
+  </div>
 
-      <div style="margin-bottom:20px; padding:15px; background:rgba(255,255,255,0.03); border-radius:10px;">
-        <h4>Security</h4>
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-          <span id="pinStateText">No PIN Set</span>
-        </div>
-        <div style="display:flex; gap:10px;">
-          <input type="number" id="settingNewPin" placeholder="New 4-digit PIN" style="background:black; border:1px solid var(--border); color:white; padding:8px; border-radius:6px; width:120px;">
-          <button class="btn primary" onclick="Lock.setPin()">Update PIN</button>
+  <div class="window" id="win_files">
+    <div class="win-header">
+      <div class="win-title">Files</div>
+      <button class="btn-close" onclick="OS.close('win_files')">×</button>
+    </div>
+    <div class="win-content">
+      <div style="display:flex; gap:10px; align-items:center; margin-bottom:12px;">
+        <label class="btn primary">Upload File <input type="file" style="display:none" id="fileUploadInput" multiple onchange="FilesApp.upload(this)"></label>
+        <button class="btn" onclick="FilesApp.exportAll()">Export All (ZIP)</button>
+        <div class="muted" id="filesCount">0 files</div>
+      </div>
+      <div id="filesList" class="list"></div>
+    </div>
+  </div>
+
+  <div class="window" id="win_recycle">
+    <div class="win-header">
+      <div class="win-title">Recycle Bin</div>
+      <button class="btn-close" onclick="OS.close('win_recycle')">×</button>
+    </div>
+    <div class="win-content">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <div class="muted">Deleted Items</div>
+        <div style="display:flex; gap:8px;">
+          <button class="btn" onclick="Recycle.empty()">Empty Bin</button>
         </div>
       </div>
+      <div id="recycleList" class="list"></div>
+    </div>
+  </div>
 
-      <div style="padding:15px; background:rgba(255,255,255,0.03); border-radius:10px;">
-        <h4>About</h4>
-        <p style="color:var(--text-muted); font-size:13px;">Darsh OS v1.1<br>Includes AudioEngine, Movies (with Theatre FX), Gallery, AI, Widgets, Custom Wallpapers, and SecureBoot.</p>
-        <button class="btn danger" onclick="localStorage.clear(); location.reload()">Factory Reset</button>
+  <div class="window" id="win_store">
+    <div class="win-header">
+      <div class="win-title">Darsh App Store</div>
+      <button class="btn-close" onclick="OS.close('win_store')">×</button>
+    </div>
+    <div class="win-content">
+      <p class="muted">Browse and install apps. Installed apps appear on the desktop and dock.</p>
+      <div id="storeList" class="list" style="margin-top:10px;"></div>
+    </div>
+  </div>
+
+  <div class="window" id="win_task">
+    <div class="win-header">
+      <div class="win-title">Task Manager</div>
+      <button class="btn-close" onclick="OS.close('win_task')">×</button>
+    </div>
+    <div class="win-content">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <div class="muted">Running Windows</div>
+        <div class="muted" id="taskUptime">Uptime: 0s</div>
+      </div>
+      <div id="taskList" class="list"></div>
+      <div style="margin-top:12px;">
+        <button class="btn danger" onclick="TaskManager.killAll()">Kill All (close windows)</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="window" id="win_antivirus">
+    <div class="win-header">
+      <div class="win-title">Darsh Anti</div>
+      <button class="btn-close" onclick="OS.close('win_antivirus')">×</button>
+    </div>
+    <div class="win-content">
+      <p class="muted">Fake scanner for demo: scans Files & Photos for threats (simulation).</p>
+      <div style="display:flex; gap:8px; margin-bottom:12px;">
+        <button class="btn primary" onclick="Antivirus.scan()">Quick Scan</button>
+        <button class="btn" onclick="Antivirus.fullScan()">Full Scan</button>
+      </div>
+      <div id="antivirusLog" class="list"></div>
+    </div>
+  </div>
+
+  <div class="window" id="win_notes">
+    <div class="win-header">
+      <div class="win-title">Notes</div>
+      <button class="btn-close" onclick="OS.close('win_notes')">×</button>
+    </div>
+    <div class="win-content">
+      <div style="display:flex; gap:8px; margin-bottom:12px;">
+        <input id="noteTitle" placeholder="Title" style="flex:1; padding:10px; border-radius:8px; border:1px solid var(--border); background:rgba(0,0,0,0.3); color:white;">
+        <button class="btn primary" onclick="Notes.save()">Save</button>
+      </div>
+      <textarea id="noteBody" placeholder="Write your note..." style="width:100%; height:200px; padding:12px; border-radius:8px; border:1px solid var(--border); background:rgba(0,0,0,0.3); color:white;"></textarea>
+      <div id="notesList" class="list" style="margin-top:12px;"></div>
+    </div>
+  </div>
+
+  <div class="window" id="win_calc">
+    <div class="win-header">
+      <div class="win-title">Calculator</div>
+      <button class="btn-close" onclick="OS.close('win_calc')">×</button>
+    </div>
+    <div class="win-content">
+      <input id="calcDisplay" readonly style="width:100%; padding:12px; font-size:20px; border-radius:8px; border:1px solid var(--border); background:rgba(0,0,0,0.2); color:white; margin-bottom:10px;">
+      <div style="display:grid; grid-template-columns: repeat(4,1fr); gap:8px;">
+        <button class="btn" onclick="Calc.press('7')">7</button>
+        <button class="btn" onclick="Calc.press('8')">8</button>
+        <button class="btn" onclick="Calc.press('9')">9</button>
+        <button class="btn" onclick="Calc.press('/')">/</button>
+
+        <button class="btn" onclick="Calc.press('4')">4</button>
+        <button class="btn" onclick="Calc.press('5')">5</button>
+        <button class="btn" onclick="Calc.press('6')">6</button>
+        <button class="btn" onclick="Calc.press('*')">*</button>
+
+        <button class="btn" onclick="Calc.press('1')">1</button>
+        <button class="btn" onclick="Calc.press('2')">2</button>
+        <button class="btn" onclick="Calc.press('3')">3</button>
+        <button class="btn" onclick="Calc.press('-')">-</button>
+
+        <button class="btn" onclick="Calc.press('0')">0</button>
+        <button class="btn" onclick="Calc.press('.')">.</button>
+        <button class="btn" onclick="Calc.equals()">=</button>
+        <button class="btn" onclick="Calc.press('+')">+</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="viewerModal" class="viewer-modal" onclick="Gallery.closeViewer(event)">
+    <div class="viewer-content" id="viewerContent">
+      <div class="viewer-nav left" onclick="Gallery.prev()">‹</div>
+      <img id="viewerImg" class="viewer-img" src="" alt="preview">
+      <div class="viewer-nav right" onclick="Gallery.next()">›</div>
+      <div class="viewer-controls">
+        <button class="btn" onclick="Gallery.downloadCurrent()">Download</button>
+        <button class="btn danger" onclick="Gallery.deleteCurrent()">Delete</button>
+        <button class="btn" onclick="Gallery.toggleFit()">Fit/Contain</button>
       </div>
     </div>
   </div>
 
   <script>
     /* =========================================
-       OS CORE & APP REGISTRY
+       Utilities & small helpers
        ========================================= */
-    const APPS = [
+    const $ = (id) => document.getElementById(id);
+    function safeParse(key, fallback){ try { return JSON.parse(localStorage.getItem(key)||'null') || fallback; } catch(e){ return fallback; } }
+    function safeSet(key, val){ try { localStorage.setItem(key, JSON.stringify(val)); } catch(e) { console.warn('storage full?'); } }
+
+    /* =========================================
+       APPS REGISTER (original apps preserved)
+       ========================================= */
+    const AVAILABLE_APPS = [
       { id: 'phone', name: 'Phone / AI', icon: '📞' },
       { id: 'music', name: 'Music', icon: '🎵' },
       { id: 'movies', name: 'Darsh Movies', icon: '🍿' },
       { id: 'camera', name: 'Camera', icon: '📸' },
       { id: 'gallery', name: 'Gallery', icon: '🖼️' },
       { id: 'settings', name: 'Settings', icon: '⚙️' },
+
+      // apps available in App Store (installable)
+      { id: 'task', name: 'Task Manager', icon: '🧠', store: true },
+      { id: 'antivirus', name: 'Darsh Anti', icon: '🛡️', store: true },
+      { id: 'notes', name: 'Notes', icon: '🗒️', store: true },
+      { id: 'calc', name: 'Calculator', icon: '🧮', store: true },
+
+      // always-available system apps (Files & Recycle & Store)
+      { id: 'files', name: 'Files', icon: '📁', system: true },
+      { id: 'recycle', name: 'Recycle Bin', icon: '🗑️', system: true },
+      { id: 'store', name: 'App Store', icon: '🏬', system: true },
     ];
 
+    /* =========================================
+       OS CORE
+       ========================================= */
     const OS = {
       alertTimer: null,
-      
       init: () => {
         SettingsModule.initWallpapers();
         Widgets.init();
-
-        const grid = document.getElementById('desktopGrid');
-        const dock = document.getElementById('dock');
-        
-        APPS.forEach(app => {
-          const el = document.createElement('div');
-          el.className = 'app-item';
-          el.innerHTML = `<div class="app-icon">${app.icon}</div><div class="app-label">${app.name}</div>`;
-          el.onclick = () => OS.openApp(app.id);
-          grid.appendChild(el);
-
-          if(dock.childElementCount < 4 && app.id !== 'gallery' && app.id !== 'settings') {
-            const d = document.createElement('div');
-            d.className = 'app-icon';
-            d.innerHTML = app.icon;
-            d.onclick = () => OS.openApp(app.id);
-            dock.appendChild(d);
-          }
-        });
+        OS.initWallpaperParallax();
+        OS.initDesktop();
 
         setInterval(() => {
           const t = new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
-          const lockClockEl = document.getElementById('lockClock');
-          const clockEl = document.getElementById('clock');
+          const lockClockEl = $('lockClock');
+          const clockEl = $('clock');
           if(clockEl) clockEl.innerText = t;
           if(lockClockEl) lockClockEl.innerText = t;
         }, 1000);
 
-        const barAnimations = [
-            'active-media', 'anim-shimmer', 'anim-pulse', 'anim-rgb', 
-            'anim-warning', 'anim-success', 'anim-ai', 'anim-scanline', 
-            'anim-neon', 'anim-matrix', 'anim-dataflow'
-        ];
-        let currentAnimIdx = 0;
-        const systemBarEl = document.getElementById('systemBar');
-        if(systemBarEl) {
-          systemBarEl.onclick = () => {
-             currentAnimIdx = (currentAnimIdx + 1) % barAnimations.length;
-             const animName = barAnimations[currentAnimIdx];
-             OS.setBar("Animation " + animName.replace('anim-', ''), animName);
-          };
+        Lock.init();
+      },
+
+      initDesktop: () => {
+        const grid = $('desktopGrid');
+        const dock = $('dock');
+        if(!grid || !dock) return;
+
+        grid.innerHTML = '';
+        dock.innerHTML = '';
+
+        let installed = safeParse('darsh_installed', null);
+        if(!installed) {
+          installed = AVAILABLE_APPS.filter(a => !a.store).map(a=>a.id);
+          safeSet('darsh_installed', installed);
         }
 
-        Lock.init();
+        AVAILABLE_APPS.forEach(app => {
+          if(installed.includes(app.id)) {
+            const el = document.createElement('div');
+            el.className = 'app-item';
+            el.innerHTML = `<div class="app-icon" data-id="${app.id}">${app.icon}</div><div class="app-label">${app.name}</div>`;
+            el.onclick = () => OS.openApp(app.id);
+            grid.appendChild(el);
+          }
+        });
+
+        const dockOrder = ['phone','music','movies','camera','gallery','files','settings','store'];
+        let added = 0;
+        dockOrder.forEach(id => {
+          if(added >= 6) return;
+          if(installed.includes(id)) {
+            const app = AVAILABLE_APPS.find(a=>a.id===id);
+            if(app) {
+              const d = document.createElement('div');
+              d.className = 'app-icon';
+              d.title = app.name;
+              d.innerHTML = app.icon;
+              d.onclick = () => OS.openApp(app.id);
+              dock.appendChild(d);
+              added++;
+            }
+          }
+        });
+
+        for(const id of installed) {
+          if(added >= 6) break;
+          if(dock.querySelector(`[data-id="${id}"]`)) continue;
+          const app = AVAILABLE_APPS.find(a=>a.id===id);
+          if(app) {
+            const d = document.createElement('div');
+            d.className = 'app-icon';
+            d.title = app.name;
+            d.innerHTML = app.icon;
+            d.onclick = () => OS.openApp(app.id);
+            dock.appendChild(d);
+            added++;
+          }
+        }
       },
 
       openApp: (id) => {
         const win = document.getElementById('win_' + id);
-        if(!win) return;
+        if(!win) {
+          OS.alert('App not available on this OS. Open App Store to install.');
+          return;
+        }
         win.classList.add('open');
 
         if(id === 'camera') Camera.start();
         if(id === 'gallery') Gallery.render();
         if(id === 'music') AudioEngine.initContext();
+        if(id === 'files') FilesApp.render();
+        if(id === 'recycle') Recycle.render();
+        if(id === 'store') Store.render();
+        if(id === 'task') TaskManager.render();
+        if(id === 'antivirus') Antivirus.render();
+        if(id === 'notes') Notes.render();
+        if(id === 'calc') Calc.render();
       },
 
       close: (idOrWinId) => {
-        // Accept either 'win_x' or 'x'
         let winId = idOrWinId;
         if(!document.getElementById(winId)) {
-          // try with win_ prefix
           if(!winId.startsWith('win_')) winId = 'win_' + idOrWinId;
         }
         const el = document.getElementById(winId);
@@ -561,16 +742,15 @@
 
         if(winId === 'win_camera') Camera.stop();
         if(winId === 'win_movies') {
-            const vid = document.getElementById('darshVideoPlayer');
+            const vid = $('darshVideoPlayer');
             if(vid) vid.pause();
         }
       },
 
       setBar: (text, animClass = false) => {
-        const b = document.getElementById('systemBar');
+        const b = $('systemBar');
         if(!b) return;
-        document.getElementById('barStatus').innerText = text;
-        // clear only known animation classes (don't wipe other classes accidentally)
+        $('barStatus').innerText = text;
         const animClasses = ['active-media','anim-shimmer','anim-pulse','anim-rgb','anim-warning','anim-success','anim-ai','anim-scanline','anim-neon','anim-matrix','anim-dataflow'];
         animClasses.forEach(c => b.classList.remove(c));
         if(animClass === true) {
@@ -581,7 +761,7 @@
       },
 
       alert: (msg) => {
-        let el = document.getElementById('osAlert');
+        let el = $('osAlert');
         if(!el) return;
         el.innerText = msg;
         el.style.opacity = '1';
@@ -592,173 +772,50 @@
             el.style.opacity = '0';
             el.style.transform = 'translateX(-50%) translateY(-100px)';
         }, 3000);
+      },
+
+      initWallpaperParallax: () => {
+        const layer = $('wallpaperLayer');
+        const saved = localStorage.getItem('darsh_wp_home');
+        if(saved) {
+          layer.style.backgroundImage = `url(${saved})`;
+        } else {
+          layer.style.backgroundImage = 'radial-gradient(circle at 50% 120%, #1e1b4b, #000)';
+        }
+
+        let lastX = 0, lastY = 0;
+        window.addEventListener('pointermove', (e) => {
+          const px = (e.clientX / window.innerWidth) - 0.5;
+          const py = (e.clientY / window.innerHeight) - 0.5;
+          lastX = px; lastY = py;
+          const tx = px * 12; 
+          const ty = py * 12; 
+          const scale = 1.02;
+          layer.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(${scale})`;
+        }, { passive: true });
+
+        if(window.DeviceOrientationEvent) {
+          window.addEventListener('deviceorientation', (ev) => {
+            const gx = ev.gamma || 0;
+            const gy = ev.beta || 0;
+            const tx = (gx / 90) * 12;
+            const ty = (gy / 90) * 12;
+            layer.style.transform = `translate3d(${tx}px, ${ty}px, 0) scale(1.02)`;
+          }, { passive: true });
+        }
+
+        let idleT = 0;
+        setInterval(()=> {
+          idleT += 0.02;
+          const tx = Math.sin(idleT) * 2;
+          const ty = Math.cos(idleT*0.7) * 2;
+          layer.style.transform = `translate3d(${tx + (lastX*6)}px, ${ty + (lastY*6)}px, 0) scale(1.02)`;
+        }, 40);
       }
     };
 
     /* =========================================
-       MOVIES APP (THEATRE SOUND + VIDEO QUALITY)
-       ========================================= */
-    const MoviesApp = {
-      ctx: null, source: null, eq: {}, theatreActive: false,
-      theatreDelay: null, theatreFeedback: null, theatreBass: null,
-      theatreWet: null, theatreDry: null,
-
-      initContext: () => {
-        if(MoviesApp.ctx) return;
-        const AC = window.AudioContext || window.webkitAudioContext;
-        if(!AC) return OS.alert('AudioContext not supported.');
-        MoviesApp.ctx = new AC();
-        const video = document.getElementById('darshVideoPlayer');
-        if(!video) return;
-        MoviesApp.source = MoviesApp.ctx.createMediaElementSource(video);
-
-        // Simple 3-band EQ for Movies
-        const freqs = [100, 1000, 5000];
-        const types = ['lowshelf', 'peaking', 'highshelf'];
-        const keys = ['low', 'mid', 'high'];
-        let prev = MoviesApp.source;
-
-        keys.forEach((k, i) => {
-          const f = MoviesApp.ctx.createBiquadFilter();
-          f.frequency.value = freqs[i]; f.type = types[i]; f.gain.value = 0;
-          prev.connect(f);
-          prev = f;
-          MoviesApp.eq[k] = f;
-        });
-
-        // Theatre Simulation Nodes
-        MoviesApp.theatreBass = MoviesApp.ctx.createBiquadFilter();
-        MoviesApp.theatreBass.type = 'lowshelf';
-        MoviesApp.theatreBass.frequency.value = 60; // Deep cinema sub
-        MoviesApp.theatreBass.gain.value = 0;
-
-        MoviesApp.theatreDelay = MoviesApp.ctx.createDelay();
-        MoviesApp.theatreDelay.delayTime.value = 0.05; // 50ms room reflection
-        
-        MoviesApp.theatreFeedback = MoviesApp.ctx.createGain();
-        MoviesApp.theatreFeedback.gain.value = 0.25; // Reverb tail
-
-        const wetGain = MoviesApp.ctx.createGain();
-        wetGain.gain.value = 0;
-        MoviesApp.theatreWet = wetGain;
-
-        const dryGain = MoviesApp.ctx.createGain();
-        dryGain.gain.value = 1;
-        MoviesApp.theatreDry = dryGain;
-
-        // Routing signal chain
-        prev.connect(MoviesApp.theatreBass);
-        
-        // Split post-bass to Dry & Delay(Wet) loops
-        MoviesApp.theatreBass.connect(dryGain);
-        MoviesApp.theatreBass.connect(MoviesApp.theatreDelay);
-        MoviesApp.theatreDelay.connect(MoviesApp.theatreFeedback);
-        MoviesApp.theatreFeedback.connect(MoviesApp.theatreDelay); 
-        MoviesApp.theatreDelay.connect(wetGain);
-
-        dryGain.connect(MoviesApp.ctx.destination);
-        wetGain.connect(MoviesApp.ctx.destination);
-      },
-
-      loadVideo: (input) => {
-        const file = input.files && input.files[0];
-        if(!file) return;
-        MoviesApp.initContext();
-        if(MoviesApp.ctx && MoviesApp.ctx.state === 'suspended') MoviesApp.ctx.resume();
-        const video = document.getElementById('darshVideoPlayer');
-        if(!video) return;
-        // revoke previous objectURL if any
-        if(video._currentObjectURL) URL.revokeObjectURL(video._currentObjectURL);
-        const obj = URL.createObjectURL(file);
-        video._currentObjectURL = obj;
-        video.src = obj;
-        const playPromise = video.play();
-        if(playPromise && typeof playPromise.then === 'function') {
-          playPromise.catch(()=>{}); // ignore autoplay block
-        }
-        OS.setBar("Darsh Movies Running", "anim-rgb");
-        OS.alert("Video Loaded Successfully.");
-      },
-
-      togglePlay: () => {
-        const video = document.getElementById('darshVideoPlayer');
-        if(!video) return;
-        if(video.paused) video.play().catch(()=>{}); else video.pause();
-      },
-
-      toggleFullscreen: () => {
-        const video = document.getElementById('darshVideoPlayer');
-        if(!video) return;
-        if (video.requestFullscreen) {
-            video.requestFullscreen();
-        } else if (video.webkitRequestFullscreen) { /* Safari */
-            video.webkitRequestFullscreen();
-        } else if (video.msRequestFullscreen) { /* IE11 */
-            video.msRequestFullscreen();
-        }
-      },
-
-      togglePanel: (panel) => {
-        const q = document.getElementById('moviesQualityPanel');
-        const a = document.getElementById('moviesAudioPanel');
-        if(!q || !a) return;
-        if(panel === 'quality') {
-            q.style.display = q.style.display === 'none' ? 'block' : 'none';
-            a.style.display = 'none';
-        } else {
-            a.style.display = a.style.display === 'none' ? 'block' : 'none';
-            q.style.display = 'none';
-        }
-      },
-
-      setQuality: (qual, btn) => {
-        const borderColor = getComputedStyle(document.documentElement).getPropertyValue('--border') || 'rgba(255,255,255,0.1)';
-        document.querySelectorAll('.quality-btn').forEach(b => {
-            b.classList.remove('primary');
-            b.style.borderColor = borderColor;
-        });
-        if(btn) btn.classList.add('primary');
-
-        // Apply hardware rendering enhancements via CSS filters
-        const video = document.getElementById('darshVideoPlayer');
-        if(!video) return;
-        if(qual === '720p') video.style.filter = 'contrast(1)';
-        if(qual === '4k30') video.style.filter = 'contrast(1.05) saturate(1.1) brightness(1.05)';
-        if(qual === '4k60') video.style.filter = 'contrast(1.1) saturate(1.15) brightness(1.1)'; 
-        if(qual === '8k30') video.style.filter = 'contrast(1.15) saturate(1.2) brightness(1.1)'; // Simulating max HDR fidelity
-
-        OS.alert(`Video Engine: Enhancing to ${qual.toUpperCase()}`);
-      },
-
-      setGain: (band, val) => {
-        MoviesApp.initContext();
-        if(MoviesApp.eq && MoviesApp.eq[band]) MoviesApp.eq[band].gain.value = parseFloat(val);
-      },
-
-      toggleTheatre: () => {
-        MoviesApp.initContext();
-        MoviesApp.theatreActive = !MoviesApp.theatreActive;
-        const btn = document.getElementById('theatreToggle');
-        if(!btn) return;
-        
-        if(MoviesApp.theatreActive) {
-            btn.classList.add('active');
-            if(MoviesApp.theatreBass && MoviesApp.theatreBass.gain) MoviesApp.theatreBass.gain.setTargetAtTime(8, MoviesApp.ctx.currentTime, 0.1); 
-            if(MoviesApp.theatreDry && MoviesApp.theatreDry.gain) MoviesApp.theatreDry.gain.setTargetAtTime(0.6, MoviesApp.ctx.currentTime, 0.1); 
-            if(MoviesApp.theatreWet && MoviesApp.theatreWet.gain) MoviesApp.theatreWet.gain.setTargetAtTime(0.7, MoviesApp.ctx.currentTime, 0.1); 
-            OS.alert("Theatre Sound Activated: Cinematic Bass & Surround Reverb On.");
-        } else {
-            btn.classList.remove('active');
-            if(MoviesApp.theatreBass && MoviesApp.theatreBass.gain) MoviesApp.theatreBass.gain.setTargetAtTime(0, MoviesApp.ctx.currentTime, 0.1);
-            if(MoviesApp.theatreDry && MoviesApp.theatreDry.gain) MoviesApp.theatreDry.gain.setTargetAtTime(1, MoviesApp.ctx.currentTime, 0.1);
-            if(MoviesApp.theatreWet && MoviesApp.theatreWet.gain) MoviesApp.theatreWet.gain.setTargetAtTime(0, MoviesApp.ctx.currentTime, 0.1);
-            OS.alert("Theatre Sound Deactivated.");
-        }
-      }
-    };
-
-    /* =========================================
-       SETTINGS & PERSONALIZATION
+       SettingsModule
        ========================================= */
     const SettingsModule = {
       setWallpaper: (input, type) => {
@@ -767,29 +824,19 @@
           const reader = new FileReader();
           reader.onload = (e) => {
             const data = e.target.result;
-            if(type === 'home') {
-              try {
+            try {
+              if(type === 'home') {
                 localStorage.setItem('darsh_wp_home', data);
-                document.body.style.backgroundImage = `url(${data})`;
-                document.body.style.backgroundSize = 'cover';
-                document.body.style.backgroundPosition = 'center';
+                $('wallpaperLayer').style.backgroundImage = `url(${data})`;
                 OS.setBar("Home Wallpaper Updated", "anim-success");
-              } catch (err) {
-                OS.alert('Failed to save wallpaper (storage limit).');
-              }
-            } else {
-              try {
+              } else {
                 localStorage.setItem('darsh_wp_lock', data);
-                const ls = document.getElementById('lockScreen');
-                if(ls) {
-                  ls.style.backgroundImage = `url(${data})`;
-                  ls.style.backgroundSize = 'cover';
-                  ls.style.backgroundPosition = 'center';
-                }
+                const ls = $('lockScreen');
+                if(ls) ls.style.backgroundImage = `url(${data})`;
                 OS.setBar("Lock Wallpaper Updated", "anim-success");
-              } catch (err) {
-                OS.alert('Failed to save wallpaper (storage limit).');
               }
+            } catch (err) {
+              OS.alert('Failed to save wallpaper (storage limit).');
             }
           };
           reader.readAsDataURL(file);
@@ -798,38 +845,33 @@
       resetWallpapers: () => {
          localStorage.removeItem('darsh_wp_home');
          localStorage.removeItem('darsh_wp_lock');
-         document.body.style.backgroundImage = '';
-         const ls = document.getElementById('lockScreen');
+         $('wallpaperLayer').style.backgroundImage = 'radial-gradient(circle at 50% 120%, #1e1b4b, #000)';
+         const ls = $('lockScreen');
          if(ls) ls.style.backgroundImage = '';
          OS.setBar("Wallpapers Reset", "anim-warning");
       },
       initWallpapers: () => {
          const homeWp = localStorage.getItem('darsh_wp_home');
          if(homeWp) {
-            document.body.style.backgroundImage = `url(${homeWp})`;
-            document.body.style.backgroundSize = 'cover';
-            document.body.style.backgroundPosition = 'center';
+            $('wallpaperLayer').style.backgroundImage = `url(${homeWp})`;
          }
          const lockWp = localStorage.getItem('darsh_wp_lock');
          if(lockWp) {
-            const ls = document.getElementById('lockScreen');
-            if(ls) {
-              ls.style.backgroundImage = `url(${lockWp})`;
-              ls.style.backgroundSize = 'cover';
-              ls.style.backgroundPosition = 'center';
-            }
+            const ls = $('lockScreen');
+            if(ls) ls.style.backgroundImage = `url(${lockWp})`;
          }
       }
     };
 
     /* =========================================
-       WIDGETS ENGINE
+       Widgets
        ========================================= */
     const Widgets = {
       init: () => {
-        const wa = document.getElementById('widgetsArea');
+        const wa = $('widgetsArea');
         if(!wa) return;
         
+        wa.innerHTML = '';
         const w1 = document.createElement('div');
         w1.className = 'widget';
         w1.innerHTML = `<div class="widget-title" id="widgetDate">Date</div>
@@ -850,8 +892,8 @@
           const now = new Date();
           const t = now.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
           const d = now.toLocaleDateString([], {weekday:'short', month:'short', day:'numeric'});
-          const wc = document.getElementById('widgetClock');
-          const wd = document.getElementById('widgetDate');
+          const wc = $('widgetClock');
+          const wd = $('widgetDate');
           if(wc) wc.innerText = t;
           if(wd) wd.innerText = d;
         }, 1000);
@@ -859,17 +901,17 @@
     };
 
     /* =========================================
-       LOCK SCREEN & SECURITY
+       LOCK logic
        ========================================= */
     const Lock = {
       buffer: '',
       
       init: () => {
         const pin = localStorage.getItem('darsh_pin');
-        const lockScreenEl = document.getElementById('lockScreen');
+        const lockScreenEl = $('lockScreen');
         if(pin) {
           if(lockScreenEl) lockScreenEl.classList.remove('hidden');
-          const pinStateTextEl = document.getElementById('pinStateText');
+          const pinStateTextEl = $('pinStateText');
           if(pinStateTextEl) pinStateTextEl.innerText = "System Protected";
         } else {
           if(lockScreenEl) lockScreenEl.classList.add('hidden');
@@ -888,7 +930,7 @@
         const stored = localStorage.getItem('darsh_pin') || '';
         const pad = document.querySelector('.numpad');
         if(Lock.buffer === stored && stored.length === 4) {
-          const lockScreenEl = document.getElementById('lockScreen');
+          const lockScreenEl = $('lockScreen');
           if(lockScreenEl) lockScreenEl.style.opacity = '0';
           OS.setBar("System Unlocked", "anim-success");
           setTimeout(() => {
@@ -932,8 +974,7 @@
             const pinStateTextEl = document.getElementById('pinStateText');
             if(pinStateTextEl) pinStateTextEl.innerText = "System Protected";
             el.value = '';
-            // ensure lock screen visible now
-            const lockScreenEl = document.getElementById('lockScreen');
+            const lockScreenEl = $('lockScreen');
             if(lockScreenEl) lockScreenEl.classList.remove('hidden');
           } catch (err) {
             OS.alert('Unable to save PIN (storage issue).');
@@ -943,10 +984,162 @@
         }
       }
     };
+  </script>
 
-    /* =========================================
-       AUDIO ENGINE (MUSIC APP)
-       ========================================= */
+  <script>
+    /* ---------- MOVIES APP ---------- */
+    const MoviesApp = {
+      ctx: null, source: null, eq: {}, theatreActive: false,
+      theatreDelay: null, theatreFeedback: null, theatreBass: null,
+      theatreWet: null, theatreDry: null,
+
+      initContext: () => {
+        if(MoviesApp.ctx) return;
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if(!AC) return OS.alert('AudioContext not supported.');
+        MoviesApp.ctx = new AC();
+        const video = document.getElementById('darshVideoPlayer');
+        if(!video) return;
+        MoviesApp.source = MoviesApp.ctx.createMediaElementSource(video);
+
+        const freqs = [100, 1000, 5000];
+        const types = ['lowshelf', 'peaking', 'highshelf'];
+        const keys = ['low', 'mid', 'high'];
+        let prev = MoviesApp.source;
+
+        keys.forEach((k, i) => {
+          const f = MoviesApp.ctx.createBiquadFilter();
+          f.frequency.value = freqs[i]; f.type = types[i]; f.gain.value = 0;
+          prev.connect(f);
+          prev = f;
+          MoviesApp.eq[k] = f;
+        });
+
+        MoviesApp.theatreBass = MoviesApp.ctx.createBiquadFilter();
+        MoviesApp.theatreBass.type = 'lowshelf';
+        MoviesApp.theatreBass.frequency.value = 60;
+        MoviesApp.theatreBass.gain.value = 0;
+
+        MoviesApp.theatreDelay = MoviesApp.ctx.createDelay();
+        MoviesApp.theatreDelay.delayTime.value = 0.05;
+        
+        MoviesApp.theatreFeedback = MoviesApp.ctx.createGain();
+        MoviesApp.theatreFeedback.gain.value = 0.25;
+
+        const wetGain = MoviesApp.ctx.createGain();
+        wetGain.gain.value = 0;
+        MoviesApp.theatreWet = wetGain;
+
+        const dryGain = MoviesApp.ctx.createGain();
+        dryGain.gain.value = 1;
+        MoviesApp.theatreDry = dryGain;
+
+        prev.connect(MoviesApp.theatreBass);
+        MoviesApp.theatreBass.connect(dryGain);
+        MoviesApp.theatreBass.connect(MoviesApp.theatreDelay);
+        MoviesApp.theatreDelay.connect(MoviesApp.theatreFeedback);
+        MoviesApp.theatreFeedback.connect(MoviesApp.theatreDelay); 
+        MoviesApp.theatreDelay.connect(wetGain);
+        dryGain.connect(MoviesApp.ctx.destination);
+        wetGain.connect(MoviesApp.ctx.destination);
+      },
+
+      loadVideo: (input) => {
+        const file = input.files && input.files[0];
+        if(!file) return;
+        MoviesApp.initContext();
+        if(MoviesApp.ctx && MoviesApp.ctx.state === 'suspended') MoviesApp.ctx.resume();
+        const video = document.getElementById('darshVideoPlayer');
+        if(!video) return;
+        if(video._currentObjectURL) URL.revokeObjectURL(video._currentObjectURL);
+        const obj = URL.createObjectURL(file);
+        video._currentObjectURL = obj;
+        video.src = obj;
+        const playPromise = video.play();
+        if(playPromise && typeof playPromise.then === 'function') {
+          playPromise.catch(()=>{}); 
+        }
+        OS.setBar("Darsh Movies Running", "anim-rgb");
+        OS.alert("Video Loaded Successfully.");
+      },
+
+      togglePlay: () => {
+        const video = document.getElementById('darshVideoPlayer');
+        if(!video) return;
+        if(video.paused) video.play().catch(()=>{}); else video.pause();
+      },
+
+      toggleFullscreen: () => {
+        const video = document.getElementById('darshVideoPlayer');
+        if(!video) return;
+        if (video.requestFullscreen) {
+            video.requestFullscreen();
+        } else if (video.webkitRequestFullscreen) {
+            video.webkitRequestFullscreen();
+        } else if (video.msRequestFullscreen) {
+            video.msRequestFullscreen();
+        }
+      },
+
+      togglePanel: (panel) => {
+        const q = document.getElementById('moviesQualityPanel');
+        const a = document.getElementById('moviesAudioPanel');
+        if(!q || !a) return;
+        if(panel === 'quality') {
+            q.style.display = q.style.display === 'none' ? 'block' : 'none';
+            a.style.display = 'none';
+        } else {
+            a.style.display = a.style.display === 'none' ? 'block' : 'none';
+            q.style.display = 'none';
+        }
+      },
+
+      setQuality: (qual, btn) => {
+        const borderColor = getComputedStyle(document.documentElement).getPropertyValue('--border') || 'rgba(255,255,255,0.1)';
+        document.querySelectorAll('.quality-btn').forEach(b => {
+            b.classList.remove('primary');
+            b.style.borderColor = borderColor;
+        });
+        if(btn) btn.classList.add('primary');
+
+        const video = document.getElementById('darshVideoPlayer');
+        if(!video) return;
+        if(qual === '720p') video.style.filter = 'contrast(1)';
+        if(qual === '4k30') video.style.filter = 'contrast(1.05) saturate(1.1) brightness(1.05)';
+        if(qual === '4k60') video.style.filter = 'contrast(1.1) saturate(1.15) brightness(1.1)'; 
+        if(qual === '8k30') video.style.filter = 'contrast(1.15) saturate(1.2) brightness(1.1)';
+
+        OS.alert(`Video Engine: Enhancing to ${qual.toUpperCase()}`);
+      },
+
+      setGain: (band, val) => {
+        MoviesApp.initContext();
+        if(MoviesApp.eq && MoviesApp.eq[band]) MoviesApp.eq[band].gain.value = parseFloat(val);
+      },
+
+      toggleTheatre: () => {
+        MoviesApp.initContext();
+        MoviesApp.theatreActive = !MoviesApp.theatreActive;
+        const btn = $('theatreToggle');
+        if(!btn) return;
+        
+        if(MoviesApp.theatreActive) {
+            btn.classList.add('active');
+            if(MoviesApp.theatreBass && MoviesApp.theatreBass.gain) MoviesApp.theatreBass.gain.setTargetAtTime(8, MoviesApp.ctx.currentTime, 0.1); 
+            if(MoviesApp.theatreDry && MoviesApp.theatreDry.gain) MoviesApp.theatreDry.gain.setTargetAtTime(0.6, MoviesApp.ctx.currentTime, 0.1); 
+            if(MoviesApp.theatreWet && MoviesApp.theatreWet.gain) MoviesApp.theatreWet.gain.setTargetAtTime(0.7, MoviesApp.ctx.currentTime, 0.1); 
+            OS.alert("Theatre Sound Activated: Cinematic Bass & Surround Reverb On.");
+        } else {
+            btn.classList.remove('active');
+            if(MoviesApp.theatreBass && MoviesApp.theatreBass.gain) MoviesApp.theatreBass.gain.setTargetAtTime(0, MoviesApp.ctx.currentTime, 0.1);
+            if(MoviesApp.theatreDry && MoviesApp.theatreDry.gain) MoviesApp.theatreDry.gain.setTargetAtTime(1, MoviesApp.ctx.currentTime, 0.1);
+            if(MoviesApp.theatreWet && MoviesApp.theatreWet.gain) MoviesApp.theatreWet.gain.setTargetAtTime(0, MoviesApp.ctx.currentTime, 0.1);
+            OS.alert("Theatre Sound Deactivated.");
+        }
+      }
+    };
+
+    /* ---------- AudioEngine ---------- */
     const AudioEngine = {
       ctx: null, source: null, filters: {}, atmosNode: null, analyser: null, initialized: false,
       atmosInput: null, atmosDry: null, atmosWet: null,
@@ -961,7 +1154,6 @@
         try {
           AudioEngine.source = AudioEngine.ctx.createMediaElementSource(el);
         } catch(e) {
-          // If creating multiple sources for the same element is attempted, skip creating new source
           console.warn('Could not create media element source:', e);
         }
 
@@ -970,7 +1162,6 @@
         const keys = ['low', 'lowMid', 'mid', 'highMid', 'high'];
         let prevNode = AudioEngine.source || null;
 
-        // If source could not be created, create a dummy gain to prevent crashes
         if(!prevNode) {
           prevNode = AudioEngine.ctx.createGain();
           prevNode.connect(AudioEngine.ctx.destination);
@@ -996,7 +1187,6 @@
         AudioEngine.atmosInput.connect(AudioEngine.atmosDry);
         AudioEngine.atmosDry.connect(AudioEngine.ctx.destination);
 
-        // safe connect: if splitter/merger supported
         try {
           AudioEngine.atmosInput.connect(splitter);
           splitter.connect(delay, 1); 
@@ -1005,7 +1195,6 @@
           merger.connect(AudioEngine.atmosWet);
           AudioEngine.atmosWet.connect(AudioEngine.ctx.destination);
         } catch(e) {
-          // fallback: connect straight to destination
           AudioEngine.atmosInput.connect(AudioEngine.ctx.destination);
         }
 
@@ -1014,7 +1203,7 @@
         if(AudioEngine.atmosInput) AudioEngine.atmosInput.connect(AudioEngine.analyser);
         
         AudioEngine.initialized = true;
-        AudioEngine.setupViz(); // set up sizing and then draw
+        AudioEngine.setupViz();
       },
 
       setGain: (band, val) => {
@@ -1026,7 +1215,7 @@
           AudioEngine.initContext();
           if(!AudioEngine.initialized) return;
         }
-        const btn = document.getElementById('atmosBtn');
+        const btn = $('atmosBtn');
         const isActive = btn && btn.classList.contains('active');
         
         if(isActive) {
@@ -1075,7 +1264,6 @@
       },
 
       setupViz: () => {
-        // setup canvas size for high-DPI and then start drawing
         const canvas = document.getElementById('vizCanvas');
         if(!canvas) return;
         function resizeCanvas() {
@@ -1120,13 +1308,11 @@
       }
     };
 
-    /* =========================================
-       CAMERA & GALLERY
-       ========================================= */
+    /* ---------- Camera & Gallery ---------- */
     const Camera = {
       stream: null,
       start: async () => {
-        const v = document.getElementById('camVideo');
+        const v = $('camVideo');
         if(!v) return;
         try {
           Camera.stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -1136,11 +1322,11 @@
       stop: () => {
         if(Camera.stream) Camera.stream.getTracks().forEach(t=>t.stop());
         Camera.stream = null;
-        const v = document.getElementById('camVideo');
+        const v = $('camVideo');
         if(v) v.srcObject = null;
       },
       snap: () => {
-        const v = document.getElementById('camVideo');
+        const v = $('camVideo');
         if(!v) return;
         const vw = v.videoWidth || 640;
         const vh = v.videoHeight || 480;
@@ -1151,11 +1337,10 @@
           ctx.drawImage(v,0,0, vw, vh);
           const data = c.toDataURL('image/jpeg');
           Gallery.save(data);
-          
           const f = document.createElement('div');
           f.style.position='fixed'; f.style.inset=0; f.style.background='white'; f.style.zIndex=999;
           document.body.appendChild(f);
-          setTimeout(()=>f.remove(), 100);
+          setTimeout(()=>f.remove(), 120);
         } catch (err) {
           OS.alert('Failed to capture photo.');
         }
@@ -1163,59 +1348,482 @@
     };
 
     const Gallery = {
+      index: 0,
+      lastPhotos: [],
       save: (data) => {
         try {
           const photos = JSON.parse(localStorage.getItem('darsh_photos') || '[]');
           photos.unshift({id: Date.now(), data: data});
           localStorage.setItem('darsh_photos', JSON.stringify(photos));
+          OS.alert('Photo saved to Gallery.');
         } catch (err) {
           OS.alert('Failed to save photo (storage limit).');
         }
       },
       render: () => {
-        const g = document.getElementById('galleryGrid');
+        const g = $('galleryGrid');
         if(!g) return;
         const photos = JSON.parse(localStorage.getItem('darsh_photos') || '[]');
         g.innerHTML = '';
         if(photos.length === 0) {
-          const eg = document.getElementById('emptyGallery');
+          const eg = $('emptyGallery');
           if(eg) eg.style.display='block';
         } else {
-          const eg = document.getElementById('emptyGallery');
+          const eg = $('emptyGallery');
           if(eg) eg.style.display='none';
-          photos.forEach(p => {
+          photos.forEach((p, idx) => {
             const el = document.createElement('div');
             el.className = 'gallery-item';
-            // use dataset to avoid injection issues with quotes in data URLs
-            el.innerHTML = `<img src="${p.data}" alt="photo" onclick="Gallery.view('${p.data.replace(/'/g,'&#39;')}')">
-                            <div class="gallery-btn-del" onclick="Gallery.del(${p.id})">×</div>`;
+            el.innerHTML = `<img src="${p.data}" alt="photo" onclick="Gallery.openViewer(${idx})">
+                            <div class="gallery-btn-del" onclick="Gallery.moveToTrash(${p.id})">×</div>`;
             g.appendChild(el);
           });
         }
       },
-      del: (id) => {
-        let photos = JSON.parse(localStorage.getItem('darsh_photos') || '[]');
-        photos = photos.filter(p => p.id !== id);
-        localStorage.setItem('darsh_photos', JSON.stringify(photos));
-        Gallery.render();
-      },
-      view: (src) => {
+      moveToTrash: (id) => {
         try {
-          const win = window.open("", "_blank");
-          if(!win) return OS.alert('Popup blocked. Allow popups to view images.');
-          win.document.write(`<img src="${src}" style="width:100%">`);
-        } catch (err) {
-          OS.alert('Unable to open image preview.');
+          let photos = JSON.parse(localStorage.getItem('darsh_photos') || '[]');
+          const item = photos.find(p=>p.id === id);
+          if(!item) return;
+          const trash = JSON.parse(localStorage.getItem('darsh_trash') || '[]');
+          trash.unshift({...item, removedAt: Date.now(), type: 'photo'});
+          localStorage.setItem('darsh_trash', JSON.stringify(trash));
+          photos = photos.filter(p => p.id !== id);
+          localStorage.setItem('darsh_photos', JSON.stringify(photos));
+          Gallery.render();
+          OS.alert('Moved to Recycle Bin.');
+        } catch(e) {
+          OS.alert('Failed to delete photo.');
+        }
+      },
+      clearAll: () => {
+        const ok = confirm('Clear all photos? This moves them to Recycle Bin.');
+        if(!ok) return;
+        const photos = JSON.parse(localStorage.getItem('darsh_photos') || '[]');
+        const trash = JSON.parse(localStorage.getItem('darsh_trash') || '[]');
+        const moved = photos.map(p=>({...p, removedAt:Date.now(), type:'photo'}));
+        const newTrash = moved.concat(trash);
+        localStorage.setItem('darsh_trash', JSON.stringify(newTrash));
+        localStorage.setItem('darsh_photos', JSON.stringify([]));
+        Gallery.render();
+        OS.alert('All photos moved to Recycle Bin.');
+      },
+      openViewer: (index) => {
+        const photos = JSON.parse(localStorage.getItem('darsh_photos') || '[]');
+        if(!photos || photos.length === 0) return;
+        Gallery.lastPhotos = photos;
+        Gallery.index = index;
+        $('viewerImg').src = photos[index].data;
+        $('viewerModal').classList.add('open');
+      },
+      closeViewer: (ev) => {
+        if(ev && ev.target && ev.target.id === 'viewerModal') {
+          $('viewerModal').classList.remove('open');
+        }
+      },
+      prev: () => {
+        if(!Gallery.lastPhotos.length) return;
+        Gallery.index = (Gallery.index - 1 + Gallery.lastPhotos.length) % Gallery.lastPhotos.length;
+        $('viewerImg').src = Gallery.lastPhotos[Gallery.index].data;
+      },
+      next: () => {
+        if(!Gallery.lastPhotos.length) return;
+        Gallery.index = (Gallery.index + 1) % Gallery.lastPhotos.length;
+        $('viewerImg').src = Gallery.lastPhotos[Gallery.index].data;
+      },
+      downloadCurrent: () => {
+        const cur = Gallery.lastPhotos[Gallery.index];
+        if(!cur) return;
+        const a = document.createElement('a');
+        a.href = cur.data;
+        a.download = 'photo-' + cur.id + '.jpg';
+        a.click();
+      },
+      deleteCurrent: () => {
+        const cur = Gallery.lastPhotos[Gallery.index];
+        if(!cur) return;
+        Gallery.moveToTrash(cur.id);
+        $('viewerModal').classList.remove('open');
+      },
+      toggleFit: () => {
+        const img = $('viewerImg');
+        if(!img) return;
+        img.style.objectFit = img.style.objectFit === 'contain' ? 'cover' : 'contain';
+      }
+    };
+
+    /* =========================================
+       Files App
+       ========================================= */
+    const FilesApp = {
+      _list: [],
+      render: () => {
+        const list = $('filesList');
+        if(!list) return;
+        FilesApp._list = JSON.parse(localStorage.getItem('darsh_files') || '[]');
+        $('filesCount').innerText = `${FilesApp._list.length} files`;
+
+        list.innerHTML = '';
+        FilesApp._list.forEach((f, idx) => {
+          const el = document.createElement('div');
+          el.className = 'list-item';
+          const left = document.createElement('div');
+          left.style.display='flex';
+          left.style.alignItems='center';
+          left.style.gap='10px';
+          left.innerHTML = `<div style="font-size:22px">${FilesApp._iconFor(f)}</div><div><div style="font-weight:600">${f.name}</div><div class="muted" style="font-size:12px">${f.type} • ${new Date(f.added).toLocaleString()}</div></div>`;
+          const right = document.createElement('div');
+          right.style.display='flex';
+          right.style.gap='8px';
+          right.innerHTML = `<button class="btn" onclick="FilesApp.open(${idx})">Open</button><button class="btn danger" onclick="FilesApp.moveToTrash(${idx})">Delete</button>`;
+          el.appendChild(left);
+          el.appendChild(right);
+          list.appendChild(el);
+        });
+      },
+
+      upload: (input) => {
+        const files = Array.from(input.files || []);
+        if(files.length === 0) return;
+        let stored = JSON.parse(localStorage.getItem('darsh_files') || '[]');
+        let count = 0;
+        const promises = files.map(file => {
+          return new Promise((res) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+              const data = e.target.result;
+              const item = { id: Date.now() + Math.floor(Math.random()*9999), name: file.name, type: file.type || FilesApp._guessType(file.name), data, added: Date.now() };
+              stored.unshift(item);
+              count++;
+              res();
+            };
+            if(file.size < (6 * 1024 * 1024)) { 
+              reader.readAsDataURL(file);
+            } else {
+              const obj = URL.createObjectURL(file);
+              const item = { id: Date.now() + Math.floor(Math.random()*9999), name: file.name, type: file.type || FilesApp._guessType(file.name), url: obj, added: Date.now(), large: true };
+              stored.unshift(item);
+              res();
+            }
+          });
+        });
+
+        Promise.all(promises).then(() => {
+          try { localStorage.setItem('darsh_files', JSON.stringify(stored)); } catch (e) {
+            OS.alert('Storage full or file too large. Try smaller files.');
+          }
+          FilesApp.render();
+          OS.alert(`Uploaded ${count} file(s).`);
+        });
+      },
+
+      open: (idx) => {
+        const stored = JSON.parse(localStorage.getItem('darsh_files') || '[]');
+        const f = stored[idx];
+        if(!f) return;
+        if((f.type || '').startsWith('image') && (f.data || f.url)) {
+          OS.openApp('gallery'); 
+          if(f.data) {
+            const photos = JSON.parse(localStorage.getItem('darsh_photos') || '[]');
+            photos.unshift({id: f.id, data: f.data});
+            localStorage.setItem('darsh_photos', JSON.stringify(photos));
+            Gallery.render();
+            Gallery.openViewer(0);
+          } else if(f.url) {
+            const win = window.open('', '_blank');
+            if(win) win.document.write(`<img src="${f.url}" style="width:100%">`);
+            else OS.alert('Popup blocked.');
+          }
+        } else if((f.type || '').startsWith('video')) {
+          OS.openApp('movies');
+          setTimeout(()=> {
+            const vid = $('darshVideoPlayer');
+            if(!vid) return;
+            if(f.data) {
+              if(vid._currentObjectURL) URL.revokeObjectURL(vid._currentObjectURL);
+              const obj = f.data;
+              vid.src = obj;
+              vid.play().catch(()=>{});
+            } else if(f.url) {
+              vid.src = f.url;
+              vid.play().catch(()=>{});
+            }
+          }, 200);
+        } else {
+          if(f.data) {
+            const win = window.open('','_blank');
+            if(!win) return OS.alert('Popup blocked.');
+            win.document.write(`<iframe src="${f.data}" style="width:100%; height:100vh; border:none;"></iframe>`);
+          } else if(f.url) {
+            const win = window.open(f.url, '_blank');
+            if(!win) OS.alert('Popup blocked.');
+          }
+        }
+      },
+
+      moveToTrash: (idx) => {
+        const stored = JSON.parse(localStorage.getItem('darsh_files') || '[]');
+        const item = stored[idx];
+        if(!item) return;
+        const trash = JSON.parse(localStorage.getItem('darsh_trash') || '[]');
+        trash.unshift({...item, removedAt: Date.now(), type: 'file'});
+        localStorage.setItem('darsh_trash', JSON.stringify(trash));
+        stored.splice(idx,1);
+        localStorage.setItem('darsh_files', JSON.stringify(stored));
+        FilesApp.render();
+        OS.alert('File moved to Recycle Bin.');
+      },
+
+      exportAll: () => {
+        OS.alert('Export not implemented in this demo (browser limits).');
+      },
+
+      _guessType: (name) => {
+        const ext = (name.split('.').pop() || '').toLowerCase();
+        if(['jpg','jpeg','png','gif','webp'].includes(ext)) return 'image/' + ext;
+        if(['mp4','webm','mov'].includes(ext)) return 'video/' + ext;
+        if(['pdf'].includes(ext)) return 'application/pdf';
+        return 'application/octet-stream';
+      },
+
+      _iconFor: (f) => {
+        const t = (f.type || '').split('/')[0];
+        if(t === 'image') return '🖼️';
+        if(t === 'video') return '🎞️';
+        if(f.name && f.name.endsWith('.pdf')) return '📄';
+        return '📁';
+      }
+    };
+
+    /* =========================================
+       Recycle Bin
+       ========================================= */
+    const Recycle = {
+      render: () => {
+        const list = $('recycleList');
+        if(!list) return;
+        const trash = JSON.parse(localStorage.getItem('darsh_trash') || '[]');
+        list.innerHTML = '';
+        if(trash.length === 0) {
+          list.innerHTML = '<div class="muted">Recycle Bin is empty.</div>';
+          return;
+        }
+        trash.forEach((t, idx) => {
+          const el = document.createElement('div');
+          el.className = 'list-item';
+          el.innerHTML = `<div style="display:flex; gap:12px; align-items:center;"><div style="font-size:22px">${t.type==='photo'?'🖼️': t.type==='file'?'📁':'📦'}</div>
+                          <div><div style="font-weight:600">${t.name || ('item-' + t.id)}</div><div class="muted" style="font-size:12px">Deleted: ${new Date(t.removedAt).toLocaleString()}</div></div></div>
+                          <div style="display:flex; gap:8px;">
+                            <button class="btn" onclick="Recycle.restore(${idx})">Restore</button>
+                            <button class="btn danger" onclick="Recycle.delPermanent(${idx})">Delete</button>
+                          </div>`;
+          list.appendChild(el);
+        });
+      },
+      restore: (idx) => {
+        const trash = JSON.parse(localStorage.getItem('darsh_trash') || '[]');
+        const item = trash[idx];
+        if(!item) return;
+        if(item.type === 'photo') {
+          const photos = JSON.parse(localStorage.getItem('darsh_photos') || '[]');
+          photos.unshift({id: item.id, data: item.data});
+          localStorage.setItem('darsh_photos', JSON.stringify(photos));
+        } else if(item.type === 'file') {
+          const files = JSON.parse(localStorage.getItem('darsh_files') || '[]');
+          files.unshift(item);
+          localStorage.setItem('darsh_files', JSON.stringify(files));
+        }
+        trash.splice(idx,1);
+        localStorage.setItem('darsh_trash', JSON.stringify(trash));
+        Recycle.render();
+        Gallery.render();
+        FilesApp.render();
+        OS.alert('Item restored.');
+      },
+      delPermanent: (idx) => {
+        const trash = JSON.parse(localStorage.getItem('darsh_trash') || '[]');
+        trash.splice(idx,1);
+        localStorage.setItem('darsh_trash', JSON.stringify(trash));
+        Recycle.render();
+        OS.alert('Item permanently deleted.');
+      },
+      empty: () => {
+        const ok = confirm('Empty Recycle Bin? This will permanently delete items.');
+        if(!ok) return;
+        localStorage.setItem('darsh_trash','[]');
+        Recycle.render();
+        OS.alert('Recycle Bin emptied.');
+      }
+    };
+
+    /* =========================================
+       App Store
+       ========================================= */
+    const Store = {
+      render: () => {
+        const list = $('storeList');
+        if(!list) return;
+        list.innerHTML = '';
+        const installed = safeParse('darsh_installed', []);
+        const storeApps = AVAILABLE_APPS.filter(a => a.store);
+        storeApps.forEach(a => {
+          const isInstalled = installed.includes(a.id);
+          const el = document.createElement('div');
+          el.className = 'list-item';
+          el.innerHTML = `<div style="display:flex; gap:12px; align-items:center;"><div style="font-size:22px">${a.icon}</div><div><div style="font-weight:600">${a.name}</div><div class="muted" style="font-size:12px">${a.id}</div></div></div>
+                          <div style="display:flex; gap:8px;">
+                            <button class="btn ${isInstalled?'':'primary'}" onclick="Store.toggleInstall('${a.id}', this)">${isInstalled?'Uninstall':'Install'}</button>
+                          </div>`;
+          list.appendChild(el);
+        });
+      },
+      toggleInstall: (id, btn) => {
+        let installed = safeParse('darsh_installed', []);
+        if(!Array.isArray(installed)) installed = [];
+        const has = installed.includes(id);
+        if(has) {
+          installed = installed.filter(x=>x!==id);
+          OS.alert('Uninstalled ' + id);
+        } else {
+          installed.push(id);
+          OS.alert('Installed ' + id);
+        }
+        safeSet('darsh_installed', installed);
+        OS.initDesktop();
+        Store.render();
+      }
+    };
+
+    /* =========================================
+       TaskManager
+       ========================================= */
+    const TaskManager = {
+      render: () => {
+        const list = $('taskList');
+        if(!list) return;
+        const wins = Array.from(document.querySelectorAll('.window.open')).map(w => ({id: w.id.replace('win_',''), title: w.querySelector('.win-title')?.innerText || w.id}));
+        list.innerHTML = '';
+        wins.forEach(w => {
+          const el = document.createElement('div');
+          el.className = 'list-item';
+          el.innerHTML = `<div style="font-weight:600">${w.title}</div><div style="display:flex; gap:8px;"><button class="btn danger" onclick="TaskManager.kill('${w.id}')">Close</button></div>`;
+          list.appendChild(el);
+        });
+        const up = Math.floor(((Date.now() - (window.__darsh_boot_time||Date.now()))/1000));
+        $('taskUptime').innerText = `Uptime: ${up}s`;
+      },
+      kill: (id) => {
+        OS.close('win_' + id);
+        TaskManager.render();
+      },
+      killAll: () => {
+        document.querySelectorAll('.window.open').forEach(w => w.classList.remove('open'));
+        Camera.stop();
+        TaskManager.render();
+      }
+    };
+
+    /* =========================================
+       Antivirus
+       ========================================= */
+    const Antivirus = {
+      render: () => {
+        const log = $('antivirusLog');
+        if(!log) return;
+        log.innerHTML = '<div class="muted">Ready to scan.</div>';
+      },
+      scan: () => {
+        const log = $('antivirusLog');
+        if(!log) return;
+        log.innerHTML = '<div class="muted">Quick scan started...</div>';
+        setTimeout(()=> {
+          log.innerHTML = '<div class="list-item">No threats found in photos.</div><div class="list-item">No threats found in files.</div>';
+          OS.alert('Quick scan complete. No threats found.');
+        }, 1200);
+      },
+      fullScan: () => {
+        const log = $('antivirusLog');
+        if(!log) return;
+        log.innerHTML = '<div class="muted">Full scan running...</div>';
+        setTimeout(()=> {
+          log.innerHTML = '<div class="list-item">Scanned 3 folders. No threats.</div><div class="list-item">System healthy.</div>';
+          OS.alert('Full scan complete. System is clean.');
+        }, 2200);
+      }
+    };
+
+    /* =========================================
+       Notes
+       ========================================= */
+    const Notes = {
+      render: () => {
+        const list = $('notesList');
+        const notes = JSON.parse(localStorage.getItem('darsh_notes') || '[]');
+        list.innerHTML = '';
+        notes.forEach((n, idx) => {
+          const el = document.createElement('div');
+          el.className = 'list-item';
+          el.innerHTML = `<div><div style="font-weight:700">${n.title || 'Untitled'}</div><div class="muted" style="font-size:12px">${new Date(n.updated).toLocaleString()}</div></div>
+                          <div style="display:flex; gap:8px;"><button class="btn" onclick="Notes.open(${idx})">Open</button><button class="btn danger" onclick="Notes.del(${idx})">Delete</button></div>`;
+          list.appendChild(el);
+        });
+      },
+      save: () => {
+        const title = $('noteTitle').value.trim();
+        const body = $('noteBody').value.trim();
+        if(!body) return OS.alert('Note empty.');
+        const notes = JSON.parse(localStorage.getItem('darsh_notes') || '[]');
+        notes.unshift({title, body, updated: Date.now()});
+        localStorage.setItem('darsh_notes', JSON.stringify(notes));
+        $('noteTitle').value = ''; $('noteBody').value = '';
+        Notes.render();
+        OS.alert('Note saved.');
+      },
+      open: (idx) => {
+        const notes = JSON.parse(localStorage.getItem('darsh_notes') || '[]');
+        const n = notes[idx];
+        if(!n) return;
+        $('noteTitle').value = n.title;
+        $('noteBody').value = n.body;
+      },
+      del: (idx) => {
+        const notes = JSON.parse(localStorage.getItem('darsh_notes') || '[]');
+        notes.splice(idx,1);
+        localStorage.setItem('darsh_notes', JSON.stringify(notes));
+        Notes.render();
+      }
+    };
+
+    /* =========================================
+       Calculator
+       ========================================= */
+    const Calc = {
+      buf: '',
+      render: () => {
+        $('calcDisplay').value = Calc.buf || '';
+      },
+      press: (k) => {
+        Calc.buf = (Calc.buf || '') + k;
+        Calc.render();
+      },
+      equals: () => {
+        try {
+          // eslint-disable-next-line no-eval
+          const res = eval(Calc.buf || '0');
+          Calc.buf = String(res);
+          Calc.render();
+        } catch(e) {
+          OS.alert('Invalid expression.');
         }
       }
     };
 
     /* =========================================
-       AI LOGIC
+       AI
        ========================================= */
     const AI = {
       send: () => {
-        const inp = document.getElementById('aiInput');
+        const inp = $('aiInput');
         if(!inp) return;
         const txt = inp.value;
         if(!txt) return;
@@ -1235,7 +1843,7 @@
         }, 600);
       },
       msg: (txt, type) => {
-        const box = document.getElementById('chatBox');
+        const box = $('chatBox');
         if(!box) return;
         const d = document.createElement('div');
         d.style.padding = '8px'; d.style.borderRadius = '8px'; d.style.marginBottom = '5px';
@@ -1265,7 +1873,7 @@
           r.onstart = () => { OS.setBar("Listening...", "anim-pulse"); }; 
           r.onresult = (e) => {
             const t = e.results[0][0].transcript;
-            document.getElementById('aiInput').value = t;
+            $('aiInput').value = t;
             AI.send();
           };
           r.onend = () => OS.setBar("System Secure");
@@ -1276,7 +1884,12 @@
       }
     };
 
-    window.onload = OS.init;
+    /* ===== initialize boot time & OS ===== */
+    window.__darsh_boot_time = Date.now();
+    window.onload = () => {
+      OS.init();
+      setTimeout(()=>OS.alert('Welcome to Darsh OS — new features added.'), 700);
+    };
 
   </script>
 </body>
